@@ -2,8 +2,8 @@
 
 Výpis je na adrese: http://covid.martinpolacek.eu
 
-- Řazena od nejnovějších
-- Čas je stanovat podle data zapsání do DB
+- Řazen od nejnovějších
+- Čas je stanoven podle data zapsání do DB
 
 Zápis dat pomocí adresy: http://covid.martinpolacek.eu/writeLog.php
 
