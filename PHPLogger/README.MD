@@ -1,4 +1,4 @@
-# PHP Loger
+# PHP Logger
 
 Výpis je na adrese: http://covid.martinpolacek.eu
 
@@ -13,7 +13,7 @@ Přijímá dva parametry:
     - 0 - informační log
     - 1 - varovný log
     - 2 - error log
-- - <strong>text</strong> - popis o co se jedná
+- <strong>text</strong> - popis o co se jedná
 
 Dotaz se musí poslat jako <strong>POST</strong> nikoliv jako GET.
 
