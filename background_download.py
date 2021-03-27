@@ -13,7 +13,7 @@ class App:
         self.root.title("App")
         self.root.geometry("500x400")
 
-        self.label = Label(self.root, text="Hello There!")
+        self.label = Label(self.root, text="Our Application")
         self.label.pack(pady=20)
 
         self.button = Button(self.root, text="pick random number", command=self.change_label)
