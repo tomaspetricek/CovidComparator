@@ -53,6 +53,22 @@ class Updater:
             if dataset.update_time:
                 self.update(dataset)
 
+class Logger:
+    def __init__(self, url):
+        pass
+
+    def send_info(self, message):
+        pass
+
+    def send_error(self, message):
+        pass
+
+    def send_warning(self, message):
+        pass
+
+    def _send(self, type_, message):
+        pass
+
 class App:
     def __init__(self, international_dataset, local_dataset):
         self.international_dataset = international_dataset
