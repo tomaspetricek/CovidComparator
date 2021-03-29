@@ -1,3 +1,6 @@
+import threading
+
+
 class DataFetcher:
     """
     Fetches data from specified data source.
@@ -34,15 +37,21 @@ class Updater:
     """
     Takes care of updating app.
     """
+    UPDATE_FREQUENCY = 15 * 60  # waiting time
+
     def __init__(self, datasets):
         self.datasets = datasets
 
-    def update(self):
-        for dataset in self.datasets:
-            dataset.update()
+    def update(self, dataset):
+        dataset.update()
+
+        # create new thread
+        threading.Timer(self.UPDATE_FREQUENCY, self.update, dataset)
 
     def run(self):
-        pass
+        for dataset in self.datasets:
+            if dataset.update_time:
+                self.update(dataset)
 
 class App:
     def __init__(self, international_dataset, local_dataset):
