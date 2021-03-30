@@ -1,6 +1,6 @@
 import threading
 
-
+# data.py
 class DataFetcher:
     """
     Fetches data from specified data source.
@@ -33,6 +33,7 @@ class Dataset:
     def save(self):
         pass
 
+# app.py
 class Updater:
     """
     Takes care of updating app.
@@ -53,22 +54,6 @@ class Updater:
             if dataset.update_time:
                 self.update(dataset)
 
-class Logger:
-    def __init__(self, url):
-        pass
-
-    def send_info(self, message):
-        pass
-
-    def send_error(self, message):
-        pass
-
-    def send_warning(self, message):
-        pass
-
-    def _send(self, type_, message):
-        pass
-
 class App:
     def __init__(self, international_dataset, local_dataset):
         self.international_dataset = international_dataset
@@ -84,6 +69,7 @@ class App:
         self.load()
         self.updater.run()
 
+# frames.py
 class Frame:
     def load(self):
         pass
@@ -105,3 +91,41 @@ class IntegrityComparator:
 
 class VaccinationComparator:
     pass
+
+# components.py
+class Component:
+    def __init__(self, parent_widget):
+        pass
+
+class AutocompleteSearchBar:
+    pass
+
+class Graph:
+    """
+    Inspiration: https://pythonprogramming.net/how-to-embed-matplotlib-graph-tkinter-gui/
+    """
+    pass
+
+class Table:
+    """
+    Inspiration: https://www.geeksforgeeks.org/create-table-using-tkinter/
+    """
+    pass
+
+# Menu - https://www.youtube.com/watch?v=ZS2_v_zsPTg
+
+class Logger:
+    def __init__(self, url):
+        pass
+
+    def send_info(self, message):
+        pass
+
+    def send_error(self, message):
+        pass
+
+    def send_warning(self, message):
+        pass
+
+    def _send(self, type_, message):
+        pass
