@@ -40,7 +40,7 @@ class Updater:
     """
     UPDATE_FREQUENCY = 15 * 60  # waiting time
 
-    def __init__(self, datasets):
+    def __init__(self, datasets, app):
         self.datasets = datasets
 
     def update(self, dataset):
@@ -59,31 +59,59 @@ class App:
         self.international_dataset = international_dataset
         self.local_dataset = local_dataset
         self.countries = ...
-        self.updater = Updater()
-        self.active_frame = ...
+        self.updater = ... # Updater()
+        self.frame = ...
+        self.views = ...
+        self.active_view = ...
 
     def load(self):
+        """
+        Load in data.
+        """
+        self.international_dataset.load()
+        self.local_dataset.load()
+
+    def show_view(self, view):
         pass
+
+    def refresh(self):
+        self.active_view.refresh()
 
     def run(self):
         self.load()
         self.updater.run()
 
-# frames.py
-class Frame:
+# views.py
+class View:
+    def __init__(self, app):
+        pass
+
     def load(self):
         pass
 
     def refresh(self):
         pass
 
-class Main(Frame):
+class Main(View):
+    def __init__(self, app):
+        super().__init__(app)
+        self.navigation = ...
+
+class VaccinationOverview(View):
+    def __init__(self, app, dataset):
+        super().__init__(app)
+        self.dataset = dataset  # international dataset in our case
+        self.navigation = ...
+        self.graph = ...
+        self.search_bar = ...
     pass
 
-class VaccinationOverview(Frame):
-    pass
-
-class DatasetIntegrityOverview(Frame):
+class DatasetIntegrityOverview(View):
+    def __init__(self, app):
+        super().__init__(app)
+        self.navigation = ...
+        self.state = ...
+        self.table = ...
     pass
 
 class IntegrityComparator:
@@ -94,7 +122,7 @@ class VaccinationComparator:
 
 # components.py
 class Component:
-    def __init__(self, parent_widget):
+    def __init__(self, parent):
         pass
 
 class AutocompleteSearchBar:
