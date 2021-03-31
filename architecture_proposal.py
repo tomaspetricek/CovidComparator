@@ -110,10 +110,12 @@ class App:
         self.load()
         self.updater.run()
 
+
 class Viewer:
     """
     Switches views.
     """
+
     def __init__(self, views, app):
         self.views = views
         self.app = app
@@ -125,20 +127,38 @@ class Viewer:
     def update(self):
         pass
 
+
 # controllers
 class Controller:
     """
     Handles logic for view.
     """
+
     def __init__(self, app, view):
         self.app = app
         self.view = view
+        self.navigation_callbacks = ...
+
+    def set_navigation_callbacks(self, value):
+        self._navigation_callbacks = []
+
+        # create call backs for all views except this one
+        for view in self.app.views:
+            if view != self:
+                callback = lambda: self.app.show_view(view)
+                self._navigation_callbacks.append(callback)
+
+    def get_navigation_callbacks(self):
+        return self._navigation_callbacks
+
+    navigation_callbacks = property(get_navigation_callbacks, set_navigation_callbacks)
 
     def update(self):
         """
         Updates data for view.
         """
         pass
+
 
 class DatasetIntegrityController(Controller):
     def __init__(self, app):
@@ -152,6 +172,7 @@ class DatasetIntegrityController(Controller):
         # update overview based on new data
         self.view.update()
         pass
+
 
 class VaccinationController(Controller):
     def __init__(self, app):
@@ -177,14 +198,16 @@ class VaccinationController(Controller):
         self.view.update()
         pass
 
+# MVC - Tkinter
+# https://sukhbinder.wordpress.com/2014/12/25/an-example-of-model-view-controller-design-pattern-with-tkinter-python/
 # views.py
 class View:
     """
     Represents visual part of app.
     Works with data provided by controller
     """
-    def __init__(self, app, controller):
-        self.app = app
+
+    def __init__(self, parent, controller):
         self.controller = controller
         pass
 
@@ -193,30 +216,14 @@ class View:
 
 
 class Main(View):
-    def __init__(self, app, controller):
-        super().__init__(app, controller)
+    def __init__(self, parent, controller):
+        super().__init__(parent, controller)
         self.navigation = ...
-
-    def set_navigation(self, value):
-        callbacks = []
-
-        # create call backs for all views except this one
-        for view in self.app.views:
-            if view != self:
-                callback = lambda: self.app.show_view(view)
-                callbacks.append(callback)
-
-        self._navigation = Navigation(self, callbacks)
-
-    def get_navigation(self):
-        return self._navigation
-
-    navigation = property(get_navigation, set_navigation)
 
 
 class VaccinationOverview(View):
-    def __init__(self, app, controller):
-        super().__init__(app, controller)
+    def __init__(self, parent, controller):
+        super().__init__(parent, controller)
         self.navigation = ...
         self.graph = ...
         self.search_bar = ...
@@ -226,14 +233,15 @@ class VaccinationOverview(View):
 
 
 class DatasetIntegrityOverview(View):
-    def __init__(self, app, controller):
-        super().__init__(app, controller)
+    def __init__(self, parent, controller):
+        super().__init__(parent, controller)
         self.navigation = ...
         self.state = ...
         self.table = ...
 
     def update(self):
         pass
+
 
 class IntegrityComparator:
     pass
@@ -252,11 +260,13 @@ class Component:
 class AutocompleteSearchBar(Component):
     pass
 
+
 class Graph(Component):
     """
-    Inspiration: https://pythonprogramming.net/how-to-embed-matplotlib-graph-tkinter-gui/
+    Inspiration: j
     """
     pass
+
 
 class Table(Component):
     """
@@ -264,9 +274,11 @@ class Table(Component):
     """
     pass
 
+
 class Navigation(Component):
     pass
     # Menu - https://www.youtube.com/watch?v=ZS2_v_zsPTg
+
 
 # logging.py
 class Logger:
