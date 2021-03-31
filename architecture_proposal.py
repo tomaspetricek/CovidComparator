@@ -128,15 +128,15 @@ class Viewer:
         pass
 
 
-# controllers
+# controllers.py
 class Controller:
     """
     Handles logic for view.
     """
 
-    def __init__(self, app, view):
+    def __init__(self, app):
         self.app = app
-        self.view = view
+        self.view = None
         self.navigation_callbacks = ...
 
     def set_navigation_callbacks(self, value):
@@ -162,10 +162,10 @@ class Controller:
 
 class DatasetIntegrityController(Controller):
     def __init__(self, app):
-        view = DatasetIntegrityOverview(app, self)
-        super().__init__(app, view)
+        super().__init__(app)
         self.overview = ...
         self.status = ...
+        self.view = DatasetIntegrityOverview(app, self)
 
     def update(self):
         self.status = ...
@@ -176,11 +176,11 @@ class DatasetIntegrityController(Controller):
 
 class VaccinationController(Controller):
     def __init__(self, app):
-        view = VaccinationOverview(app, self)
-        super().__init__(app, view)
+        super().__init__(app)
         self.overview = ...
         self.selected_countries = ...
         self.status = ...
+        self.view = VaccinationOverview(app, self)
 
     def add_country(self, country):
         # add country to selected countries
