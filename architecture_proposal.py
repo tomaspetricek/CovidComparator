@@ -1,11 +1,13 @@
 import threading
 import datetime
 
+
 # data.py
 class DataFetcher:
     """
     Fetches data from specified data source.
     """
+
     def fetch(self, from_date):
         """
         :param from_date: datetime
@@ -18,13 +20,16 @@ class DataFetcher:
         # remove data before from_date
         pass
 
+
 class WHOFetcher(DataFetcher):
     def fetch(self, from_date):
         pass
 
+
 class MZCRFetcher(DataFetcher):
     def fetch(self, from_date):
         pass
+
 
 class Dataset:
     """
@@ -53,6 +58,7 @@ class Dataset:
     def save(self):
         pass
 
+
 # app.py
 class Updater:
     """
@@ -61,10 +67,18 @@ class Updater:
     UPDATE_FREQUENCY = 15 * 60  # waiting time
 
     def __init__(self, datasets, app):
+        self.app = app
         self.datasets = datasets
 
+    def _update_controllers(self):
+        for controller in self.app.controllers:
+            controller.update()
+
     def update(self, dataset):
-        dataset.update()
+        updated = dataset.update()
+        if updated:
+            self._update_controllers()
+            self.app.viewer.update()
 
         # create new thread
         threading.Timer(self.UPDATE_FREQUENCY, self.update, dataset)
@@ -74,15 +88,16 @@ class Updater:
             if dataset.update_time:
                 self.update(dataset)
 
+
 class App:
     def __init__(self, international_dataset, local_dataset):
         self.international_dataset = international_dataset
         self.local_dataset = local_dataset
         self.countries = ...
-        self.updater = ... # Updater()
+        self.updater = ...  # Updater()
         self.frame = ...
-        self.views = ...
-        self.active_view = ...
+        self.controllers = ...
+        self.viewer = ...
 
     def load(self):
         """
@@ -91,77 +106,169 @@ class App:
         self.international_dataset.load()
         self.local_dataset.load()
 
-    def show_view(self, view):
-        pass
-
-    def refresh(self):
-        self.active_view.refresh()
-
     def run(self):
         self.load()
         self.updater.run()
 
+class Viewer:
+    """
+    Switches views.
+    """
+    def __init__(self, views, app):
+        self.views = views
+        self.app = app
+        self.active_view = ...
+
+    def show_view(self):
+        pass
+
+    def update(self):
+        pass
+
+# controllers
+class Controller:
+    """
+    Handles logic for view.
+    """
+    def __init__(self, app, view):
+        self.app = app
+        self.view = view
+
+    def update(self):
+        """
+        Updates data for view.
+        """
+        pass
+
+class DatasetIntegrityController(Controller):
+    def __init__(self, app):
+        view = DatasetIntegrityOverview(app, self)
+        super().__init__(app, view)
+        self.overview = ...
+        self.status = ...
+
+    def update(self):
+        self.status = ...
+        # update overview based on new data
+        self.view.update()
+        pass
+
+class VaccinationController(Controller):
+    def __init__(self, app):
+        view = VaccinationOverview(app, self)
+        super().__init__(app, view)
+        self.overview = ...
+        self.selected_countries = ...
+        self.status = ...
+
+    def add_country(self, country):
+        # add country to selected countries
+        # update graph
+        pass
+
+    def remove_country(self, country):
+        # remove country from selected countries
+        # update graph
+        pass
+
+    def update(self):
+        self.status = ...
+        # update overview based on new data
+        self.view.update()
+        pass
+
 # views.py
 class View:
-    def __init__(self, app):
+    """
+    Represents visual part of app.
+    Works with data provided by controller
+    """
+    def __init__(self, app, controller):
+        self.app = app
+        self.controller = controller
         pass
 
-    def load(self):
+    def update(self):
         pass
 
-    def refresh(self):
-        pass
 
 class Main(View):
-    def __init__(self, app):
-        super().__init__(app)
+    def __init__(self, app, controller):
+        super().__init__(app, controller)
         self.navigation = ...
 
+    def set_navigation(self, value):
+        callbacks = []
+
+        # create call backs for all views except this one
+        for view in self.app.views:
+            if view != self:
+                callback = lambda: self.app.show_view(view)
+                callbacks.append(callback)
+
+        self._navigation = Navigation(self, callbacks)
+
+    def get_navigation(self):
+        return self._navigation
+
+    navigation = property(get_navigation, set_navigation)
+
+
 class VaccinationOverview(View):
-    def __init__(self, app, dataset):
-        super().__init__(app)
-        self.dataset = dataset  # international dataset in our case
+    def __init__(self, app, controller):
+        super().__init__(app, controller)
         self.navigation = ...
         self.graph = ...
         self.search_bar = ...
-    pass
+
+    def update(self):
+        pass
+
 
 class DatasetIntegrityOverview(View):
-    def __init__(self, app):
-        super().__init__(app)
+    def __init__(self, app, controller):
+        super().__init__(app, controller)
         self.navigation = ...
         self.state = ...
         self.table = ...
-    pass
+
+    def update(self):
+        pass
 
 class IntegrityComparator:
     pass
 
+
 class VaccinationComparator:
     pass
+
 
 # components.py
 class Component:
     def __init__(self, parent):
         pass
 
-class AutocompleteSearchBar:
+
+class AutocompleteSearchBar(Component):
     pass
 
-class Graph:
+class Graph(Component):
     """
     Inspiration: https://pythonprogramming.net/how-to-embed-matplotlib-graph-tkinter-gui/
     """
     pass
 
-class Table:
+class Table(Component):
     """
     Inspiration: https://www.geeksforgeeks.org/create-table-using-tkinter/
     """
     pass
 
-# Menu - https://www.youtube.com/watch?v=ZS2_v_zsPTg
+class Navigation(Component):
+    pass
+    # Menu - https://www.youtube.com/watch?v=ZS2_v_zsPTg
 
+# logging.py
 class Logger:
     def __init__(self, url):
         pass
