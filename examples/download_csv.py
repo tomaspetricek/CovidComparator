@@ -24,6 +24,7 @@ def main():
     print(data.columns)
     print(data.dtypes)
     print(type(data["Date_reported"][0]))
+    print(data.iloc[[0]])
 
 
 if __name__ == '__main__':
