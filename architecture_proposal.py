@@ -212,6 +212,9 @@ class View:
         pass
 
     def update(self):
+        """
+        Updates whole view.
+        """
         pass
 
 
@@ -228,6 +231,9 @@ class VaccinationOverview(View):
         self.graph = ...
         self.search_bar = ...
 
+    def update_graph(self):
+        pass
+
     def update(self):
         pass
 
@@ -238,6 +244,9 @@ class DatasetIntegrityOverview(View):
         self.navigation = ...
         self.state = ...
         self.table = ...
+
+    def update_table(self):
+        pass
 
     def update(self):
         pass
@@ -263,9 +272,12 @@ class AutocompleteSearchBar(Component):
 
 class Graph(Component):
     """
-    Inspiration: j
     """
-    pass
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.canvas = ...
+        self.toolbar = ... # removal buttons
+        pass
 
 
 class Table(Component):
