@@ -5,7 +5,11 @@ class Component:
 
 
 class AutocompleteSearchBar(Component):
-    pass
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.canvas = ...
+        self.toolbar = ... # removal buttons
+        pass
 
 
 class Graph(Component):
