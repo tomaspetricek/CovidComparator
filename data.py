@@ -3,6 +3,12 @@ import datetime
 import requests
 import io
 
+def get_csv(url, encoding="utf-8"):
+    with requests.Session() as s:
+        response = s.get(url)
+
+    content = response.content.decode(encoding)
+    return content
 
 class DataFetcher:
     """
@@ -24,20 +30,59 @@ class DataFetcher:
 
 class WHOFetcher(DataFetcher):
     def fetch(self, from_date):
-        pass
+        # get data
+        csv_url = "https://covid19.who.int/WHO-COVID-19-global-data.csv"
+        content = get_csv(csv_url)
+        data = pd.read_csv(io.StringIO(content))
+
+        # keep only columns used in Dataset.COLUMN_NAMES
+        data = data[["Date_reported", "Country", "New_cases", "Cumulative_cases"]]
+
+        # rename columns based on Dataset.COLUMNS
+        n_rows = data.shape[0]
+        data.insert(4, "vaccinations", pd.Series(n_rows * [None]))
+        data.columns = Dataset.COLUMN_NAMES
+
+        # change columns dtypes based on Dataset.COLUMN_DTYPES
+        data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
+
+        #print(data.iloc[0])
+        #print(data.columns)
+        #print(data.dtypes)
+
+        # remove data before from_date
 
 
 class MZCRFetcher(DataFetcher):
     def fetch(self, from_date):
-        pass
+        # get data
+        csv_url = "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/zakladni-prehled.csv"
+        content = get_csv(csv_url)
+        data = pd.read_csv(io.StringIO(content))
 
+        # keep only columns used in Dataset.COLUMN_NAMES
+        data = data[["datum", "potvrzene_pripady_vcerejsi_den", "potvrzene_pripady_celkem", "vykazana_ockovani_celkem"]]
+
+        # rename columns based on Dataset.COLUMNS
+        n_rows = data.shape[0]
+        data.insert(1, "country",  pd.Series(n_rows * ["Czechia"]))
+        data.columns = Dataset.COLUMN_NAMES
+        # change columns dtypes based on Dataset.COLUMN_DTYPES
+        data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
+        
+        #print(data.iloc[0])
+        #print(data.columns)
+        #print(data.dtypes)
+
+
+        # remove data before from_date
 
 class Dataset:
     """
     Stores data and makes available.
     """
-    COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected"]
-    COLUMN_DTYPES = [datetime.datetime, str, int, int]
+    COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected", "total vaccinations"]
+    COLUMN_DTYPES = [datetime.datetime, str, int, int, int]
 
     def __init__(self, fetcher):
         """
@@ -59,3 +104,7 @@ class Dataset:
 
     def save(self):
         pass
+
+if __name__ == "__main__":
+    #MZCRFetcher().fetch(None)
+    WHOFetcher().fetch(None)
