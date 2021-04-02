@@ -29,7 +29,10 @@ class DataFetcher:
 
 
 class WHOFetcher(DataFetcher):
-    def fetch(self, from_date):
+    def _fetch_vaccines(self):
+        pass
+
+    def _fetch_stats(self):
         # get data
         csv_url = "https://covid19.who.int/WHO-COVID-19-global-data.csv"
         content = get_csv(csv_url)
@@ -41,16 +44,21 @@ class WHOFetcher(DataFetcher):
         # rename columns based on Dataset.COLUMNS
         n_rows = data.shape[0]
         data.insert(4, "vaccinations", pd.Series(n_rows * [None]))
+        data.insert(5, "date loaded",  pd.Series(n_rows * [datetime.datetime.now()]))
         data.columns = Dataset.COLUMN_NAMES
 
         # change columns dtypes based on Dataset.COLUMN_DTYPES
         data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
 
-        #print(data.iloc[0])
-        #print(data.columns)
-        #print(data.dtypes)
+        return data
 
-        # remove data before from_date
+    def fetch(self, from_date):
+        stats = self._fetch_stats()
+        vaccines = self._fetch_vaccines()
+
+
+
+        return data
 
 
 class MZCRFetcher(DataFetcher):
@@ -66,6 +74,7 @@ class MZCRFetcher(DataFetcher):
         # rename columns based on Dataset.COLUMNS
         n_rows = data.shape[0]
         data.insert(1, "country",  pd.Series(n_rows * ["Czechia"]))
+        data.insert(5, "date loaded",  pd.Series(n_rows * [datetime.datetime.now()]))
         data.columns = Dataset.COLUMN_NAMES
         # change columns dtypes based on Dataset.COLUMN_DTYPES
         data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
@@ -77,12 +86,14 @@ class MZCRFetcher(DataFetcher):
 
         # remove data before from_date
 
+        return data
+
 class Dataset:
     """
     Stores data and makes available.
     """
-    COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected", "total vaccinations"]
-    COLUMN_DTYPES = [datetime.datetime, str, int, int, int]
+    COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected", "total vaccinations", "date loaded"]
+    COLUMN_DTYPES = [datetime.datetime, str, int, int, int, datetime.datetime]
 
     def __init__(self, fetcher):
         """
