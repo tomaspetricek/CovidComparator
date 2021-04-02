@@ -1,4 +1,8 @@
-class View:
+import tkinter as tk
+from tkinter import ttk
+
+
+class View(tk.Frame):
     """
     Represents visual part of app.
     Works with data provided by controller

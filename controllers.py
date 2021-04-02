@@ -1,4 +1,4 @@
-from views import Vacc
+from views import *
 
 class Controller:
     """
@@ -30,13 +30,18 @@ class Controller:
         """
         pass
 
+class MainController(Controller):
+    def __init__(self, app):
+        super().__init__(app)
+        self.view = Main(app.frame, self)
+
 
 class DatasetIntegrityController(Controller):
     def __init__(self, app):
         super().__init__(app)
         self.data = ...
         self.status = ...
-        self.view = DatasetIntegrityOverview(app, self)
+        self.view = DatasetIntegrityOverview(app.frame, self)
 
     def update(self):
         self.status = ...
@@ -51,7 +56,7 @@ class VaccinationController(Controller):
         self.data = ...
         self.selected_countries = ...
         self.status = ...
-        self.view = VaccinationOverview(app, self)
+        self.view = VaccinationOverview(app.frame, self)
 
     def add_country(self, country):
         # add country to selected countries

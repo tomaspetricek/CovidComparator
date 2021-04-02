@@ -1,4 +1,7 @@
 import threading
+import tkinter as tk
+from tkinter import ttk
+from controllers import DatasetIntegrityController, MainController, VaccinationController
 
 
 class Updater:
@@ -30,15 +33,32 @@ class Updater:
                 self.update(dataset)
 
 
-class App:
+class App(tk.Tk):
     def __init__(self, international_dataset, local_dataset):
+        super().__init__()
         self.international_dataset = international_dataset
         self.local_dataset = local_dataset
         self.countries = ...
         self.updater = ...  # Updater()
-        self.frame = ...
-        self.controllers = ...
+        self.frame = tk.Frame(self)
+        self.controllers = None
         self.viewer = ...
+
+    def set_controllers(self, value):
+        controller_classes = [
+            MainController,
+            VaccinationController,
+            DatasetIntegrityController
+        ]
+
+        self._controllers = []
+        for controller_class in controller_classes:
+            self.controllers.append(controller_class(self))
+
+    def get_controllers(self):
+        return self._controllers
+
+    temperature = property(get_controllers, set_controllers)
 
     def load(self):
         """
