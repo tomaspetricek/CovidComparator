@@ -1,5 +1,7 @@
 from views import *
 
+from data import *
+
 class Controller:
     """
     Handles logic for view.
@@ -48,10 +50,17 @@ class DatasetIntegrityController(Controller):
 
     def set_data(self, value):
         international_dataset, local_dataset = value
-        columns = ["date posted", "diffrence daily increase of infected", "diffrence total number of infected", "difference date posted"]
-        filtered_international_dataset = international_dataset.loc(international_dataset["country"] == "Czechia")
-        print(filtered_international_dataset)
-        #for czech_day in app.local_dataset
+        filtered_international_dataset = international_dataset.loc[international_dataset["country"] == "Czechia"]
+        filtered_international_dataset = filtered_international_dataset.dropna(how='any',axis=0)
+
+        merged_dataset = pd.merge_asof(international_dataset, local_dataset, on='date posted')
+        diff_daily_infected = merged_dataset["daily increase of infected_x"] - merged_dataset["daily increase of infected_y"]
+        diff_total_infected = merged_dataset["total number of infected_x"] - merged_dataset["total number of infected_y"]
+        diff_date_posted = merged_dataset["date loaded_x"] - merged_dataset["date loaded_y"]
+
+        self._data = pd.DataFrame({'date posted': merged_dataset["date posted"], "diffrence daily increase of infected" : diff_daily_infected,
+                            "diffrence total number of infected": diff_total_infected, "difference date posted": diff_date_posted})
+
 
     data = property(get_data, set_data)
 
@@ -91,4 +100,5 @@ class VaccinationController(Controller):
 
 if __name__ == "__main__":
     controller = DatasetIntegrityController(None)
-    controller.set_data()
+    cr_data = MZCRFetcher().fetch(None)
+    controller.set_data((cr_data, cr_data))
