@@ -1,16 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from components import Navigation
+from utils import Callback
 
-
-class Callback:
-    def __init__(self, fun, *args, **kwargs):
-        self.fun = fun
-        self.args = args
-        self.kwargs = kwargs
-
-    def __call__(self):
-        self.fun(*self.args, **self.kwargs)
 
 class View(tk.Frame):
     """
@@ -22,7 +14,7 @@ class View(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.navigation = controller.VIEW_CLASSES
+        self.navigation = controller.app.view_classes
 
     def set_navigation(self, value):
         view_classes = value
@@ -82,18 +74,6 @@ class VaccinationOverview(View):
     def update(self):
         pass
 
-    def add_country(self, country):
-        # add country to selected countries
-        # update graph
-        self.update_graph()
-        pass
-
-    def remove_country(self, country):
-        # remove country from selected countries
-        # update graph
-        self.update_graph()
-        pass
-
 
 class DatasetIntegrityOverview(View):
     TITLE = "Dataset Integrity Overview"
@@ -114,27 +94,3 @@ class DatasetIntegrityOverview(View):
 
     def update(self):
         pass
-
-    def get_data(self):
-        return self._data
-
-    def set_data(self, value):
-        international_dataset, local_dataset = value
-        filtered_international_dataset = international_dataset.loc[international_dataset["country"] == "Czechia"]
-        filtered_international_dataset = filtered_international_dataset.dropna(how='any', axis=0)
-
-        merged_dataset = pd.merge_asof(international_dataset, local_dataset, on='date posted')
-        diff_daily_infected = merged_dataset["daily increase of infected_x"] - merged_dataset["daily increase of infected_y"]
-        diff_total_infected = merged_dataset["total number of infected_x"] - merged_dataset["total number of infected_y"]
-        diff_date_posted = merged_dataset["date loaded_x"] - merged_dataset["date loaded_y"]
-
-        self._data = pd.DataFrame({'date posted': merged_dataset["date posted"], "diffrence daily increase of infected" : diff_daily_infected,
-                            "diffrence total number of infected": diff_total_infected, "difference date posted": diff_date_posted})
-
-    data = property(get_data, set_data)
-
-
-# if __name__ == "__main__":
-#     controller_ = DatasetIntegrityController(None)
-#     cr_data = MZCRFetcher().fetch(None)
-#     controller_.set_data((cr_data, cr_data))

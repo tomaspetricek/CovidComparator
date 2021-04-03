@@ -20,3 +20,12 @@ class IntegrityComparator:
 
 class VaccinationComparator:
     pass
+
+class Callback:
+    def __init__(self, fun, *args, **kwargs):
+        self.fun = fun
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self):
+        self.fun(*self.args, **self.kwargs)

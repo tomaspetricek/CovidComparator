@@ -1,7 +1,7 @@
 import threading
 import tkinter as tk
 from tkinter import ttk
-from views import MainView, VaccinationOverview, DatasetIntegrityOverview
+from controllers import MainController, VaccinationController, DatasetIntegrityController
 
 
 class Updater:
@@ -39,10 +39,10 @@ class App(tk.Tk):
     """
     NAME = "Covid Comparator"
 
-    VIEW_CLASSES = [
-        MainView,
-        VaccinationOverview,
-        DatasetIntegrityOverview
+    CONTROLLER_CLASSES = [
+        MainController,
+        VaccinationController,
+        DatasetIntegrityController,
     ]
 
     def __init__(self, international_dataset, local_dataset):
@@ -53,7 +53,9 @@ class App(tk.Tk):
         #self.updater = ...  # Updater()
         self.title(self.NAME)
         self.frame = None
-        self.views = None
+        self.view_classes = self.CONTROLLER_CLASSES
+        self.controllers = self.CONTROLLER_CLASSES
+        self.viewer = Viewer(self.controllers, MainController.VIEW_CLASS)
         #self.geometry("250x150+300+300")
 
     def set_frame(self, value):
@@ -67,31 +69,31 @@ class App(tk.Tk):
 
     frame = property(get_frame, set_frame)
 
-    def set_views(self, value):
-        self._views = {}
+    def set_view_classes(self, value):
+        controller_classes = value
+        self._view_classes = []
 
-        for view_class in self.VIEW_CLASSES:
-            context = view_class.__name__
-            view = view_class(self.frame, self)
-            self._views[context] = view
+        for controller_class in controller_classes:
+            view_class = controller_class.VIEW_CLASS
+            self._view_classes.append(view_class)
 
-            if view_class == MainView:
-                self.active_view = view
+    def get_view_classes(self):
+        return self._view_classes
 
-    def get_views(self):
-        return self._views
+    view_classes = property(get_view_classes, set_view_classes)
 
-    views = property(get_views, set_views)
+    def set_controllers(self, value):
+        controller_classes = value
+        self._controllers = []
+        
+        for controller_class in controller_classes:
+            controller = controller_class(self)
+            self._controllers.append(controller)
 
-    def show_view(self, context=None):
-        if context is None:
-            view = self.active_view
-        else:
-            print(context)
-            view = self.views[context]
-            self.active_view = view
+    def get_controllers(self):
+        return self._controllers
 
-        view.tkraise()
+    controllers = property(get_controllers, set_controllers)
 
     def load(self):
         """
@@ -104,7 +106,43 @@ class App(tk.Tk):
         #self.load()
         #self.updater.run()
         self.mainloop()
-        self._viewer.show_view()
+        self.viewer.show_view()
+
+class Viewer:
+    """
+    Switches between views.
+    """
+
+    def __init__(self, controllers, active_view_class):
+        self.views = controllers
+        self.active_view = self.views[active_view_class.__name__]
+
+    def set_views(self, value):
+        controllers = value
+        self._views = {}
+
+        for controller in controllers:
+            view_class = controller.VIEW_CLASS
+            context = view_class.__name__
+            view = controller.view
+            self._views[context] = view
+
+    def get_views(self):
+        return self._views
+
+    views = property(get_views, set_views)
+
+    def show_view(self, context=None):
+        if context is None:
+            view = self.active_view
+        else:
+            view = self._views[context]
+            self.active_view = view
+
+        view.tkraise()
+
+    def update(self):
+        pass
 
 
 if __name__ == '__main__':
