@@ -1,7 +1,7 @@
 import threading
 import tkinter as tk
 from tkinter import ttk
-from controllers import DatasetIntegrityController, MainController, VaccinationController
+from views import MainView, VaccinationOverview, DatasetIntegrityOverview
 
 
 class Updater:
@@ -34,56 +34,80 @@ class Updater:
 
 
 class App(tk.Tk):
+    """
+    Inspiration: https://pythonprogramming.net/how-to-embed-matplotlib-graph-tkinter-gui/
+    """
+    NAME = "Covid Comparator"
+
+    VIEW_CLASSES = [
+        MainView,
+        VaccinationOverview,
+        DatasetIntegrityOverview
+    ]
+
     def __init__(self, international_dataset, local_dataset):
         super().__init__()
-        self.international_dataset = international_dataset
-        self.local_dataset = local_dataset
-        self.countries = ...
-        self.updater = ...  # Updater()
-        self.frame = tk.Frame(self)
-        self.controllers = None
-        self.viewer = ...
+        #self.international_dataset = international_dataset
+        #self.local_dataset = local_dataset
+        #self.countries = ...
+        #self.updater = ...  # Updater()
+        self.title(self.NAME)
+        self.frame = None
+        self.views = None
+        #self.geometry("250x150+300+300")
 
-    def set_controllers(self, value):
-        controller_classes = [
-            MainController,
-            VaccinationController,
-            DatasetIntegrityController
-        ]
+    def set_frame(self, value):
+        self._frame = tk.Frame()
+        self._frame.pack(side="top", fill="both", expand=True)
+        self._frame.grid_rowconfigure(0, weight=1)
+        self._frame.grid_columnconfigure(0, weight=1)
 
-        self._controllers = []
-        for controller_class in controller_classes:
-            self.controllers.append(controller_class(self))
+    def get_frame(self):
+        return self._frame
 
-    def get_controllers(self):
-        return self._controllers
+    frame = property(get_frame, set_frame)
 
-    temperature = property(get_controllers, set_controllers)
+    def set_views(self, value):
+        self._views = {}
+
+        for view_class in self.VIEW_CLASSES:
+            context = view_class.__name__
+            view = view_class(self.frame, self)
+            self._views[context] = view
+
+            if view_class == MainView:
+                self.active_view = view
+
+    def get_views(self):
+        return self._views
+
+    views = property(get_views, set_views)
+
+    def show_view(self, context=None):
+        if context is None:
+            view = self.active_view
+        else:
+            print(context)
+            view = self.views[context]
+            self.active_view = view
+
+        view.tkraise()
 
     def load(self):
         """
         Load in data.
         """
         self.international_dataset.load()
-        self.local_dataset.load()
+        self.local_dataset.load(self.frame)
 
     def run(self):
-        self.load()
-        self.updater.run()
+        #self.load()
+        #self.updater.run()
+        self.mainloop()
+        self._viewer.show_view()
 
 
-class Viewer:
-    """
-    Switches between views.
-    """
+if __name__ == '__main__':
+    app = App(None, None)
+    app.run()
 
-    def __init__(self, views, app):
-        self.views = views
-        self.app = app
-        self.active_view = ...
-
-    def show_view(self, view):
-        pass
-
-    def update(self):
-        pass

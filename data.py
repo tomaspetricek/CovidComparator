@@ -55,9 +55,6 @@ class WHOFetcher(DataFetcher):
     def fetch(self, from_date):
         stats = self._fetch_stats()
         vaccines = self._fetch_vaccines()
-
-
-
         return data
 
 
@@ -115,6 +112,7 @@ class Dataset:
 
     def save(self):
         pass
+
 
 if __name__ == "__main__":
     #MZCRFetcher().fetch(None)

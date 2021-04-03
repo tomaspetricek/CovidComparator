@@ -1,6 +1,10 @@
-# components.py
+import tkinter as tk
+from tkinter import ttk
+
+
 class Component:
     def __init__(self, parent):
+        self.parent = parent
         pass
 
 
@@ -30,8 +34,16 @@ class Table(Component):
 
 
 class Navigation(Component):
-    # Menu - https://www.youtube.com/watch?v=ZS2_v_zsPTg
-    def __init__(self, parent, button_callbacks):
+    """
+    Inspiration: https://www.youtube.com/watch?v=ZS2_v_zsPTg
+    """
+    def __init__(self, parent, labels, callbacks):
         super().__init__(parent)
-        pass
+        for label, callback in zip(labels, callbacks):
+            button = tk.Button(parent, text=label, command=callback)
+            button.pack()
+
+
+
+
 
