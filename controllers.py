@@ -1,6 +1,6 @@
 from views import *
-
 from data import *
+
 
 class Controller:
     """
@@ -34,7 +34,6 @@ class DatasetIntegrityController(Controller):
         super().__init__(app)
         #self.data = self.app.international_dataset, self.app.local_dataset
         #self.status = ...
-        #self.view = DatasetIntegrityOverview(app.frame, self)
 
     def get_data(self):
         return self._data
@@ -69,7 +68,6 @@ class VaccinationController(Controller):
         # self.data = app.international_dataset
         # self.selected_countries = ...
         # self.status = ...
-        # self.view = VaccinationOverview(app.frame, self)
 
     def add_country(self, country):
         # add country to selected countries
