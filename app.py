@@ -56,7 +56,7 @@ class App(tk.Tk):
         self.view_classes = self.CONTROLLER_CLASSES
         self.controllers = self.CONTROLLER_CLASSES
         self.viewer = Viewer(self.controllers, MainController.VIEW_CLASS)
-        #self.geometry("250x150+300+300")
+        self.geometry("750x500")
 
     def set_frame(self, value):
         self._frame = tk.Frame()
