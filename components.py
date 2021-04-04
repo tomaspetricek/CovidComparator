@@ -9,12 +9,66 @@ class Component:
         self.parent = parent
         pass
 
-class AutocompleteSearchBar(Component):
-    def __init__(self, parent):
+class SearchBar(Component):
+    """
+    Inspired: # https://www.geeksforgeeks.org/autocmplete-combobox-in-python-tkinter/
+    """
+    def __init__(self, parent, items, on_select):
         super().__init__(parent)
-        self.canvas = ...
-        self.toolbar = ... # removal buttons
-        pass
+        self.items = items
+        self.search_box = None
+        self.advisor = self.items
+        self.on_select = on_select
+
+    def set_search_box(self, value):
+        self._search_box = tk.Entry(self.parent)
+        self._search_box.pack()
+        self._search_box.bind('<KeyRelease>', self._check_search)
+
+    def get_search_box(self):
+        return self._search_box
+
+    search_box = property(get_search_box, set_search_box)
+
+    def set_advisor(self, value):
+        items = value
+        self._advisor = tk.Listbox(self.parent)
+        self._advisor.pack()
+        self._update_advisor(items)
+        self.advisor.bind("<<ListboxSelect>>", self._on_select)
+
+    def get_advisor(self):
+        return self._advisor
+
+    advisor = property(get_advisor, set_advisor)
+
+    def _check_search(self, event):
+        target = event.widget.get()
+
+        if target == '':
+            items_to_display = self.items
+        else:
+            items_to_display = []
+            for item in self.items:
+                if target.lower() in item.lower():
+                    items_to_display.append(item)
+
+        self._update_advisor(items_to_display)
+
+    def _update_advisor(self, items_to_display):
+        # clear previous data
+        self.advisor.delete(0, 'end')
+
+        # put new data
+        for item in items_to_display:
+            self.advisor.insert('end', item)
+
+    def _on_select(self, event):
+        # Note here that Tkinter passes an event object to onselect()
+        widget = event.widget
+        index = int(widget.curselection()[0])
+        value = widget.get(index)
+        self.on_select(value)
 
 class StatusBar(Component):
     def __init__(self, parent):

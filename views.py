@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from components import Navigation, Graph, Table
+from components import Navigation, Graph, Table, SearchBar
 from utils import Callback
 
 
@@ -62,7 +62,7 @@ class VaccinationView(View):
         title.pack(pady=10, padx=10)
         # self.state = ...
         # self.graph = Graph(self, controller.figure)
-        # self.search_bar = ...
+        # self.search_bar = SearchBar(self, controller.countries, controller.add_country)
         self.grid(row=0, column=0, sticky="nsew")
 
     def update_graph(self):

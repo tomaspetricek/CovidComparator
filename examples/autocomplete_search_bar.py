@@ -40,13 +40,14 @@ class SearchBar:
             self.advisor.insert('end', item)
 
 
-# Driver code
-items = ('C', 'C++', 'Java',
-     'Python', 'Perl',
-     'PHP', 'ASP', 'JS')
+if __name__ == "__main__":
+    # Driver code
+    items = ('C', 'C++', 'Java',
+         'Python', 'Perl',
+         'PHP', 'ASP', 'JS')
 
-root = Tk()
+    root = Tk()
 
-search_bar = SearchBar(items)
+    search_bar = SearchBar(items)
 
-root.mainloop()
+    root.mainloop()

@@ -75,6 +75,7 @@ class VaccinationController(Controller):
     def __init__(self, app):
         super().__init__(app)
         #self.overview = app.international_dataset
+        #self.countries = app.countries
         # self.selected_countries = ...
         # self.status = ...
         #self.figure =self._overview
@@ -99,7 +100,7 @@ class VaccinationController(Controller):
     def add_country(self, country):
         # add country to selected countries
         # update graph
-        self.view.update_graph()
+        # self.view.update_graph()
         pass
 
     def remove_country(self, country):
