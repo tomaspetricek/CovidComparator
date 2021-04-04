@@ -7,7 +7,6 @@ class Component:
         self.parent = parent
         pass
 
-
 class AutocompleteSearchBar(Component):
     def __init__(self, parent):
         super().__init__(parent)
@@ -15,16 +14,20 @@ class AutocompleteSearchBar(Component):
         self.toolbar = ... # removal buttons
         pass
 
+class StatusBar(Component):
+    def __init__(self, parent):
+        super().__init__(parent)
+        pass
 
 class Graph(Component):
     """
+    Inspiration: https://datatofish.com/matplotlib-charts-tkinter-gui/
     """
     def __init__(self, parent):
         super().__init__(parent)
         self.canvas = ...
         self.toolbar = ... # removal buttons
         pass
-
 
 class Table(Component):
     """

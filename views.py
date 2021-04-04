@@ -52,7 +52,7 @@ class MainView(View):
         self.grid(row=0, column=0, sticky="nsew")
 
 
-class VaccinationOverview(View):
+class VaccinationView(View):
     TITLE = "Vaccination Overview"
 
     def __init__(self, parent, controller):
@@ -75,7 +75,7 @@ class VaccinationOverview(View):
         pass
 
 
-class DatasetIntegrityOverview(View):
+class DatasetIntegrityView(View):
     TITLE = "Dataset Integrity Overview"
 
     def __init__(self, parent, controller):
@@ -94,3 +94,8 @@ class DatasetIntegrityOverview(View):
 
     def update(self):
         pass
+
+
+
+
+

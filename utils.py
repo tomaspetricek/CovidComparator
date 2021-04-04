@@ -22,6 +22,10 @@ class VaccinationComparator:
     pass
 
 class Callback:
+    """
+    Stores function and its arguments.
+    When called, it calls the function passing stored arguments.
+    """
     def __init__(self, fun, *args, **kwargs):
         self.fun = fun
         self.args = args

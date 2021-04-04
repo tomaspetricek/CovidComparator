@@ -28,7 +28,7 @@ class MainController(Controller):
         super().__init__(app)
 
 class DatasetIntegrityController(Controller):
-    VIEW_CLASS = DatasetIntegrityOverview
+    VIEW_CLASS = DatasetIntegrityView
 
     def __init__(self, app):
         super().__init__(app)
@@ -61,7 +61,7 @@ class DatasetIntegrityController(Controller):
 
 
 class VaccinationController(Controller):
-    VIEW_CLASS = VaccinationOverview
+    VIEW_CLASS = VaccinationView
 
     def __init__(self, app):
         super().__init__(app)
@@ -86,6 +86,15 @@ class VaccinationController(Controller):
         # update overview based on new data
         self.view.update()
         pass
+
+class Overview:
+    pass
+
+class VaccinationOverview(Overview):
+    pass
+
+class DatasetIntegrityOverview(Overview):
+    pass
 
 
 if __name__ == "__main__":
