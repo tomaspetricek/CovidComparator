@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 class Component:
@@ -23,11 +25,20 @@ class Graph(Component):
     """
     Inspiration: https://datatofish.com/matplotlib-charts-tkinter-gui/
     """
-    def __init__(self, parent):
+    def __init__(self, parent, figure):
         super().__init__(parent)
-        self.canvas = ...
-        self.toolbar = ... # removal buttons
-        pass
+        self.canvas = figure
+
+    def set_canvas(self, value):
+        figure = value
+        self._canvas = FigureCanvasTkAgg(figure, self.parent)
+        self._canvas.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
+
+    def get_canvas(self):
+        return self._canvas
+
+    canvas = property(get_canvas, set_canvas)
+
 
 class Table(Component):
     """

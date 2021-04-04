@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from components import Navigation
+from components import Navigation, Graph
 from utils import Callback
 
 
@@ -57,14 +57,11 @@ class VaccinationView(View):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        # self.data = app.international_dataset
-        # self.selected_countries = ...
-        # self.status = ...
 
         title = tk.Label(self, text=self.TITLE)
         title.pack(pady=10, padx=10)
         #self.state = ...
-        #self.graph = ...
+        self.graph = Graph(self, controller.figure)
         #self.search_bar = ...
         self.grid(row=0, column=0, sticky="nsew")
 
@@ -84,9 +81,6 @@ class DatasetIntegrityView(View):
         title.pack(side="top", fill="x", pady=10)
         # self.state = ...
         # self.table = ...
-
-        # self.data = self.app.international_dataset, self.app.local_dataset
-        # self.status = ...
         self.grid(row=0, column=0, sticky="nsew")
 
     def update_table(self):
