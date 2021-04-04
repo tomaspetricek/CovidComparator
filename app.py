@@ -2,7 +2,8 @@ import threading
 import tkinter as tk
 from tkinter import ttk
 from controllers import MainController, VaccinationController, DatasetIntegrityController
-
+from utils import Logger
+import socket
 
 class Updater:
     """
@@ -146,6 +147,8 @@ class Viewer:
 
 
 if __name__ == '__main__':
+    logger = Logger('http://covid.martinpolacek.eu/writeLog.php')
+    logger.send_info("Aplikace spuštěna na " + str(socket.gethostname()))
     app = App(None, None)
     app.run()
 
