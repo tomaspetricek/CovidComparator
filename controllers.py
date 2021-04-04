@@ -1,6 +1,7 @@
 from views import *
 from data import *
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Controller:
@@ -36,8 +37,12 @@ class DatasetIntegrityController(Controller):
 
     def __init__(self, app):
         super().__init__(app)
-        # self.data = self.app.international_dataset, self.app.local_dataset
+        #self.data = self.app.international_dataset, self.app.local_dataset
         # self.status = ...
+
+        dates = pd.date_range('20210101', periods=8)
+        df = pd.DataFrame(np.random.randn(8, 4), index=dates, columns=list('ABCD'))
+        self.overview = df
         self.view = self.VIEW_CLASS(app.frame, self)
 
     def get_data(self):

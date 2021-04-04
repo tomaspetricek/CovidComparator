@@ -44,7 +44,46 @@ class Table(Component):
     """
     Inspiration: https://www.geeksforgeeks.org/create-table-using-tkinter/
     """
-    pass
+    def __init__(self, parent, data):
+        super().__init__(parent)
+        self._free_row = 0
+        self.header = data
+        self.body = data
+
+    def _add(self, cells, n_rows, n_cols):
+        for row in range(n_rows):
+            for col in range(n_cols):
+                if n_rows == 1:
+                    label = tk.Label(self.parent, text=cells[col])
+                else:
+                    label = tk.Label(self.parent, text=cells[row][col])
+                # label.grid(row=self._free_row + row, column=col)
+                label.pack()
+
+        self._free_row += n_rows
+
+    def set_header(self, value):
+        data = value
+        self._header = data.columns.values.tolist()
+        n_rows = 1
+        n_cols = len(self._header)
+        self._add(self._header, n_rows, n_cols)
+
+    def get_header(self):
+        return self._header
+
+    header = property(get_header, set_header)
+
+    def set_body(self, value):
+        data = value
+        self._body = data.to_numpy()
+        n_rows, n_cols = self._body.shape
+        self._add(self._body, n_rows, n_cols)
+
+    def get_body(self):
+        return self._body
+
+    body = property(get_body, set_body)
 
 
 class Navigation(Component):
