@@ -2,7 +2,6 @@ import requests
 
 class Logger:
 
-
     def __init__(self, url):
         self.URL = url
         pass

@@ -37,18 +37,14 @@ class DatasetIntegrityController(Controller):
 
     def __init__(self, app):
         super().__init__(app)
-        #self.data = self.app.international_dataset, self.app.local_dataset
         # self.status = ...
-
-        dates = pd.date_range('20210101', periods=8)
-        df = pd.DataFrame(np.random.randn(8, 4), index=dates, columns=list('ABCD'))
-        self.overview = df
+        # self.overview = self.app.international_dataset, self.app.local_dataset
         self.view = self.VIEW_CLASS(app.frame, self)
 
-    def get_data(self):
-        return self._data
+    def get_overview(self):
+        return self._overview
 
-    def set_data(self, value):
+    def set_overview(self, value):
         international_dataset, local_dataset = value
         filtered_international_dataset = international_dataset.loc[international_dataset["country"] == "Czechia"]
         filtered_international_dataset = filtered_international_dataset.dropna(how='any', axis=0)
@@ -60,11 +56,11 @@ class DatasetIntegrityController(Controller):
             "total number of infected_y"]
         diff_date_posted = merged_dataset["date loaded_x"] - merged_dataset["date loaded_y"]
 
-        self._data = pd.DataFrame(
+        self._overview = pd.DataFrame(
             {'date posted': merged_dataset["date posted"], "diffrence daily increase of infected": diff_daily_infected,
              "diffrence total number of infected": diff_total_infected, "difference date posted": diff_date_posted})
 
-    data = property(get_data, set_data)
+    overview = property(get_overview, set_overview)
 
     def update(self):
         # self.status = ...

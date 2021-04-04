@@ -80,7 +80,7 @@ class DatasetIntegrityView(View):
         title = tk.Label(self, text=self.TITLE)
         title.pack(side="top", fill="x", pady=10)
         # self.state = ...
-        self.table = Table(self, controller.overview)
+        # self.table = Table(self, controller.overview)
         self.grid(row=0, column=0, sticky="nsew")
 
     def update_table(self):
