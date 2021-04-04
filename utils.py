@@ -1,17 +1,28 @@
+import requests
+
 class Logger:
+
+
     def __init__(self, url):
+        self.URL = url
         pass
 
     def send_info(self, message):
+        self._send(0, message)
         pass
 
     def send_error(self, message):
+        self._send(2, message)
         pass
 
     def send_warning(self, message):
+        self._send(1, message)
         pass
 
     def _send(self, type_, message):
+        params = {"type": type_, "text": message}
+
+        requests.post(self.URL, params)
         pass
 
 class IntegrityComparator:
