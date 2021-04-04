@@ -46,19 +46,20 @@ class Table(Component):
     """
     def __init__(self, parent, data):
         super().__init__(parent)
+        self.frame = tk.Frame(self.parent)
         self._free_row = 0
         self.header = data
         self.body = data
+        self.frame.pack()
 
     def _add(self, cells, n_rows, n_cols):
         for row in range(n_rows):
             for col in range(n_cols):
                 if n_rows == 1:
-                    label = tk.Label(self.parent, text=cells[col])
+                    label = tk.Label(self.frame, text=cells[col])
                 else:
-                    label = tk.Label(self.parent, text=cells[row][col])
-                # label.grid(row=self._free_row + row, column=col)
-                label.pack()
+                    label = tk.Label(self.frame, text=cells[row][col])
+                label.grid(row=self._free_row + row, column=col)
 
         self._free_row += n_rows
 
