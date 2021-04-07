@@ -4,6 +4,7 @@ from tkinter import ttk
 from controllers import MainController, VaccinationController, DatasetIntegrityController
 from utils import Logger
 import socket
+import datetime
 
 class Updater:
     """
@@ -52,6 +53,7 @@ class App(tk.Tk):
         #self.local_dataset = local_dataset
         #self.countries = ...
         #self.updater = ...  # Updater()
+        self.start_time = datetime.datetime.now()
         self.title(self.NAME)
         self.frame = None
         self.view_classes = self.CONTROLLER_CLASSES
