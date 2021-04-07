@@ -65,20 +65,21 @@ class DatasetIntegrityController(Controller):
     def update(self):
         # self.status = ...
         # update overview based on new data
-        self.view.update()
+        # self.view.update()
         pass
 
 
 class VaccinationController(Controller):
     VIEW_CLASS = VaccinationView
+    MAX_COUNTRIES_SELECTED = 4
 
     def __init__(self, app):
         super().__init__(app)
-        #self.overview = app.international_dataset
-        #self.countries = app.countries
-        # self.selected_countries = ...
+        # self.overview = app.international_dataset
+        # self.selectable_countries = app.countries
+        # self.selected_countries = []
         # self.status = ...
-        #self.figure =self._overview
+        # self.figure = self._overview
         self.view = self.VIEW_CLASS(app.frame, self)
 
     def set_figure(self, value):
@@ -106,13 +107,13 @@ class VaccinationController(Controller):
     def remove_country(self, country):
         # remove country from selected countries
         # update graph
-        self.view.update_graph()
+        # self.view.update()
         pass
 
     def update(self):
         # self.status = ...
         # update overview based on new data
-        self.view.update()
+        # self.view.update()
         pass
 
 

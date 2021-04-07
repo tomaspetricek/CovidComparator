@@ -60,15 +60,17 @@ class VaccinationView(View):
 
         title = tk.Label(self, text=self.TITLE)
         title.pack(pady=10, padx=10)
-        # self.state = ...
+        # self.state_bar = ...
         # self.graph = Graph(self, controller.figure)
         # self.search_bar = SearchBar(self, controller.countries, controller.add_country)
+        # self.deselect_box =
         self.grid(row=0, column=0, sticky="nsew")
 
-    def update_graph(self):
-        pass
-
     def update(self):
+        # self.state.update(self.controller.state)
+        # self.search_bar.update(self.controller.selectable_countries)
+        # self.graph.update(self.controller.figure)
+        # self.deselect_box(self.selected_countries)
         pass
 
 
@@ -79,15 +81,17 @@ class DatasetIntegrityView(View):
         super().__init__(parent, controller)
         title = tk.Label(self, text=self.TITLE)
         title.pack(side="top", fill="x", pady=10)
-        # self.state = ...
+        # self.state_bar = ...
         # self.table = Table(self, controller.overview)
         self.grid(row=0, column=0, sticky="nsew")
 
-    def update_table(self):
+    def _update_table(self, new_rows):
         pass
 
     def update(self):
+        # self.state.update()
         pass
+
 
 
 
