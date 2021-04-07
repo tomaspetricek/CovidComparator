@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from components import Navigation, Graph, Table, SearchBar
+from components import Navigation, Graph, Table, SearchBar, StateBar
 from utils import Callback
 
 
@@ -60,7 +60,7 @@ class VaccinationView(View):
 
         title = tk.Label(self, text=self.TITLE)
         title.pack(pady=10, padx=10)
-        # self.state_bar = ...
+        # self.state_bar = StateBar(self, ...)
         # self.graph = Graph(self, controller.figure)
         # self.search_bar = SearchBar(self, controller.countries, controller.add_country)
         # self.deselect_box =
@@ -81,7 +81,7 @@ class DatasetIntegrityView(View):
         super().__init__(parent, controller)
         title = tk.Label(self, text=self.TITLE)
         title.pack(side="top", fill="x", pady=10)
-        # self.state_bar = ...
+        # self.state_bar = StateBar(self, ...)
         # self.table = Table(self, controller.overview)
         self.grid(row=0, column=0, sticky="nsew")
 

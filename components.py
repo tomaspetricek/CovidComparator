@@ -151,6 +151,33 @@ class Navigation(Component):
             button = tk.Button(parent, text=label, command=callback)
             button.pack()
 
+class StateBar(Component):
+    STATE_NAME_COL = 0
+    STATE_VALUE_COL = 1
+
+    def __init__(self, parent, states):
+        super().__init__(parent)
+        self.frame = tk.Frame(parent)
+        self.states = states
+        self.frame.pack()
+
+    def set_states(self, value):
+        states = value
+        self._states = {}
+
+        for row, (name, value) in enumerate(states.items()):
+            name_label = tk.Label(self.frame, text=name)
+            name_label.grid(row=row, column=self.STATE_NAME_COL)
+
+            value_label = tk.Label(self.frame, text=value)
+            value_label.grid(row=row, column=self.STATE_VALUE_COL)
+
+            self._states[name] = value_label
+
+    def get_states(self):
+        return self._states
+
+    states = property(get_states, set_states)
 
 
 
