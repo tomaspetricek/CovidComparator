@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
+# class Component(tk.Frame):
+#     def __init__(self, parent):
+#         super().__init__(parent)
+
 class Component(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -145,9 +149,9 @@ class Navigation(Component):
     """
     def __init__(self, parent, labels, callbacks):
         super().__init__(parent)
-        for label, callback in zip(labels, callbacks):
-            button = tk.Button(parent, text=label, command=callback)
-            button.pack()
+        for col, (label, callback) in enumerate(zip(labels, callbacks)):
+            button = tk.Button(self, text=label, command=callback)
+            button.grid(row=0, column=col)
 
 class StateBar(Component):
     STATE_NAME_COL = 0

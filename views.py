@@ -15,7 +15,10 @@ class View(tk.Frame):
         super().__init__(parent)
         self.controller = controller
         self.navigation = controller.app.view_classes
-        self.navigation.pack()
+        self.navigation.grid(row=0, column=0)
+
+        self.title = tk.Label(self, text=self.TITLE)
+        self.title.grid(row=1, column=0)
 
     def set_navigation(self, value):
         view_classes = value
@@ -47,10 +50,8 @@ class MainView(View):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        title = tk.Label(self, text=self.TITLE)
-        title.pack(pady=10, padx=10)
-
         self.grid(row=0, column=0, sticky="nsew")
+        self.grid_columnconfigure(0, weight=1)
 
 
 class VaccinationView(View):
@@ -58,14 +59,12 @@ class VaccinationView(View):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-
-        title = tk.Label(self, text=self.TITLE)
-        title.pack(pady=10, padx=10)
         # self.state_bar = StateBar(self, ...)
         # self.graph = Graph(self, controller.figure)
         # self.search_bar = SearchBar(self, controller.countries, controller.add_country)
         # self.deselect_box =
         self.grid(row=0, column=0, sticky="nsew")
+        self.grid_columnconfigure(0, weight=1)
 
     def update(self):
         # self.state.update(self.controller.state)
@@ -80,11 +79,10 @@ class DatasetIntegrityView(View):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        title = tk.Label(self, text=self.TITLE)
-        title.pack(side="top", fill="x", pady=10)
         # self.state_bar = StateBar(self, ...)
         # self.table = Table(self, controller.overview)
         self.grid(row=0, column=0, sticky="nsew")
+        self.grid_columnconfigure(0, weight=1)
 
     def _update_table(self, new_rows):
         pass
