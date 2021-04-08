@@ -14,6 +14,10 @@ class DataFetcher:
     """
     Fetches data from specified data source.
     """
+    URL = None
+
+    # def _process(self, data):
+    # def _get_data(self):
 
     def fetch(self, from_date):
         """
@@ -28,13 +32,12 @@ class DataFetcher:
         pass
 
 
-class WHOFetcher(DataFetcher):
-    def _fetch_vaccines(self):
-        pass
+class WHOStatsFetcher(DataFetcher):
+    URL = "https://covid19.who.int/WHO-COVID-19-global-data.csv"
 
     def _fetch_stats(self):
         # get data
-        csv_url = "https://covid19.who.int/WHO-COVID-19-global-data.csv"
+        csv_url = self.URL
         content = get_csv(csv_url)
         data = pd.read_csv(io.StringIO(content))
 
@@ -43,9 +46,9 @@ class WHOFetcher(DataFetcher):
 
         # rename columns based on Dataset.COLUMNS
         n_rows = data.shape[0]
-        data.insert(4, "vaccinations", pd.Series(n_rows * [None]))
-        data.insert(5, "date loaded",  pd.Series(n_rows * [datetime.datetime.now()]))
-        data.columns = Dataset.COLUMN_NAMES
+        # data.insert(4, "vaccinations", pd.Series(n_rows * [None]))
+        data.insert(4, "date loaded",  pd.Series(n_rows * [datetime.datetime.now()]))
+        data.columns = StatsDataset.COLUMN_NAMES
 
         # change columns dtypes based on Dataset.COLUMN_DTYPES
         data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
@@ -54,25 +57,26 @@ class WHOFetcher(DataFetcher):
 
     def fetch(self, from_date):
         stats = self._fetch_stats()
-        vaccines = self._fetch_vaccines()
-        return data
+        return stats
 
 
-class MZCRFetcher(DataFetcher):
+class MZCRStatsFetcher(DataFetcher):
+    URL = "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/zakladni-prehled.csv"
+
     def fetch(self, from_date):
         # get data
-        csv_url = "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/zakladni-prehled.csv"
+        csv_url = self.URL
         content = get_csv(csv_url)
         data = pd.read_csv(io.StringIO(content))
 
         # keep only columns used in Dataset.COLUMN_NAMES
-        data = data[["datum", "potvrzene_pripady_vcerejsi_den", "potvrzene_pripady_celkem", "vykazana_ockovani_celkem"]]
+        data = data[["datum", "potvrzene_pripady_vcerejsi_den", "potvrzene_pripady_celkem"]]
 
         # rename columns based on Dataset.COLUMNS
         n_rows = data.shape[0]
         data.insert(1, "country",  pd.Series(n_rows * ["Czechia"]))
-        data.insert(5, "date loaded",  pd.Series(n_rows * [datetime.datetime.now()]))
-        data.columns = Dataset.COLUMN_NAMES
+        data.insert(4, "date loaded",  pd.Series(n_rows * [datetime.datetime.now()]))
+        data.columns = StatsDataset.COLUMN_NAMES
         # change columns dtypes based on Dataset.COLUMN_DTYPES
         data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
         
@@ -85,14 +89,26 @@ class MZCRFetcher(DataFetcher):
 
         return data
 
+class WHOVaccinationFetcher(DataFetcher):
+    URL = ...
+
+    def fetch(self, from_date):
+        pass
+
+class MZCRVaccinationFetcher(DataFetcher):
+    URL = ...
+
+    def fetch(self, from_date):
+        pass
+
 class Dataset:
     """
     Stores data and makes available.
     """
-    COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected", "total vaccinations", "date loaded"]
-    COLUMN_DTYPES = [datetime.datetime, str, int, int, int, datetime.datetime]
+    COLUMN_NAMES = None
+    COLUMN_DTYPES = None
 
-    def __init__(self, fetcher):
+    def __init__(self, fetcher, csv_filename):
         """
 
         :param fetcher: DataFetcher
@@ -101,6 +117,31 @@ class Dataset:
         self.fetcher = fetcher
         self.data = ...
         self.last_updated = ...
+        self.csv_filename = csv_filename
+
+    def update(self):
+        # add all data that are different and change old ones
+        # - some data can be changed after initial value was placed
+        pass
+
+    def load(self):
+        # check if there are csv files in home directory if so load them
+        # fetch new data
+        # save whole dataset rewriting old one
+        # self.save
+        pass
+
+    def save(self):
+        # rewrite old csv file
+        pass
+
+class StatsDataset(Dataset):
+    COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected", "date loaded"]
+    COLUMN_DTYPES = [datetime.datetime, str, int, int, datetime.datetime]
+
+    def __init__(self, fetcher):
+        super().__init__(fetcher)
+        pass
 
     def update(self):
         self.fetcher.fetch(...)
@@ -110,10 +151,24 @@ class Dataset:
     def load(self):
         self.fetcher.fetch(...)
 
-    def save(self):
+
+class VaccinationDataset(Dataset):
+    COLUMN_NAMES = ["date posted", "total vaccinations"]
+    COLUMN_DTYPES = [...]
+
+    def __init__(self, fetcher):
+        super().__init__(fetcher)
         pass
+
+    def update(self):
+        self.fetcher.fetch(...)
+        # update whole data, because data can be changed after initial release
+        ...
+
+    def load(self):
+        self.fetcher.fetch(...)
 
 
 if __name__ == "__main__":
-    #MZCRFetcher().fetch(None)
-    WHOFetcher().fetch(None)
+    MZCRStatsFetcher().fetch(None)
+    #WHOStatsFetcher().fetch(None)
