@@ -1,5 +1,8 @@
 import requests
 
+# TODO rename Logger to Notifier
+# TODO create Logger that logs into file -> logs errors that we wouldn't anticipate
+
 class Logger:
 
     def __init__(self, url):
@@ -23,13 +26,6 @@ class Logger:
 
         requests.post(self.URL, params)
         pass
-
-class IntegrityComparator:
-    pass
-
-
-class VaccinationComparator:
-    pass
 
 class Callback:
     """
