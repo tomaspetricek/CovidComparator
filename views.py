@@ -2,23 +2,27 @@ import tkinter as tk
 from tkinter import ttk
 from components import Navigation, Graph, Table, SearchBar, StateBar
 from utils import Callback
+from mixins import FlexibleMixin
 
 
-class View(tk.Frame):
+class View(tk.Frame, FlexibleMixin):
     """
     Represents visual part of app.
     Works with data provided by controller
     """
     TITLE = None
+    N_COLUMNS = None
+    N_ROWS = None
 
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
         self.navigation = controller.app.view_classes
-        self.navigation.grid(row=0, column=0)
 
         self.title = tk.Label(self, text=self.TITLE)
-        self.title.grid(row=1, column=0)
+
+    def layout(self):
+        pass
 
     def set_navigation(self, value):
         view_classes = value
@@ -47,15 +51,24 @@ class View(tk.Frame):
 
 class MainView(View):
     TITLE = "Main"
+    N_COLUMNS = 2
+    N_ROWS = 2
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
+        self.layout()
+
+    def layout(self):
+        self.navigation.grid(row=0, column=0, columnspan=2, sticky="we")
+        self.title.grid(row=1, column=0)
+        self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
-        self.grid_columnconfigure(0, weight=1)
 
 
 class VaccinationView(View):
     TITLE = "Vaccination Overview"
+    N_COLUMNS = 2
+    N_ROWS = 2
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -63,8 +76,13 @@ class VaccinationView(View):
         # self.graph = Graph(self, controller.figure)
         # self.search_bar = SearchBar(self, controller.countries, controller.add_country)
         # self.deselect_box =
+        self.layout()
+
+    def layout(self):
+        self.navigation.grid(row=0, column=0, columnspan=2, sticky="we")
+        self.title.grid(row=1, column=0)
+        self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
-        self.grid_columnconfigure(0, weight=1)
 
     def update(self):
         # self.state.update(self.controller.state)
@@ -76,13 +94,20 @@ class VaccinationView(View):
 
 class DatasetIntegrityView(View):
     TITLE = "Dataset Integrity Overview"
+    N_COLUMNS = 2
+    N_ROWS = 2
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         # self.state_bar = StateBar(self, ...)
         # self.table = Table(self, controller.overview)
+        self.layout()
+
+    def layout(self):
+        self.navigation.grid(row=0, column=0, columnspan=2, sticky="we")
+        self.title.grid(row=1, column=0)
+        self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
-        self.grid_columnconfigure(0, weight=1)
 
     def _update_table(self, new_rows):
         pass

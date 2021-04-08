@@ -2,13 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from mixins import FlexibleMixin
 
 
-# class Component(tk.Frame):
-#     def __init__(self, parent):
-#         super().__init__(parent)
-
-class Component(tk.Frame):
+class Component(tk.Frame, FlexibleMixin):
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -149,9 +146,12 @@ class Navigation(Component):
     """
     def __init__(self, parent, labels, callbacks):
         super().__init__(parent)
+        n_cols = len(labels)
         for col, (label, callback) in enumerate(zip(labels, callbacks)):
-            button = tk.Button(self, text=label, command=callback)
-            button.grid(row=0, column=col)
+            button = tk.Button(self, text=label, command=callback)# width=50)
+            button.grid(row=0, column=col,  sticky="we", padx=5, pady=5)
+
+        self.make_flexible(n_cols=n_cols, n_rows=1)
 
 class StateBar(Component):
     STATE_NAME_COL = 0
