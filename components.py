@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
-class Component:
+class Component(tk.Frame):
     def __init__(self, parent):
-        self.parent = parent
-        pass
+        super().__init__(parent)
+
 
 class SearchBar(Component):
     """
@@ -21,7 +21,7 @@ class SearchBar(Component):
         self.on_select = on_select
 
     def set_search_box(self, value):
-        self._search_box = tk.Entry(self.parent)
+        self._search_box = tk.Entry(self)
         self._search_box.pack()
         self._search_box.bind('<KeyRelease>', self._check_search)
 
@@ -32,7 +32,7 @@ class SearchBar(Component):
 
     def set_advisor(self, value):
         items = value
-        self._advisor = tk.Listbox(self.parent)
+        self._advisor = tk.Listbox(self)
         self._advisor.pack()
         self._update_advisor(items)
         self.advisor.bind("<<ListboxSelect>>", self._on_select)
@@ -85,7 +85,7 @@ class Graph(Component):
 
     def set_canvas(self, value):
         figure = value
-        self._canvas = FigureCanvasTkAgg(figure, self.parent)
+        self._canvas = FigureCanvasTkAgg(figure, self)
         self._canvas.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
 
     def get_canvas(self):
@@ -100,19 +100,17 @@ class Table(Component):
     """
     def __init__(self, parent, data):
         super().__init__(parent)
-        self.frame = tk.Frame(self.parent)
         self._free_row = 0
         self.header = data
         self.body = data
-        self.frame.pack()
 
     def _add(self, cells, n_rows, n_cols):
         for row in range(n_rows):
             for col in range(n_cols):
                 if n_rows == 1:
-                    label = tk.Label(self.frame, text=cells[col])
+                    label = tk.Label(self, text=cells[col])
                 else:
-                    label = tk.Label(self.frame, text=cells[row][col])
+                    label = tk.Label(self, text=cells[row][col])
                 label.grid(row=self._free_row + row, column=col)
 
         self._free_row += n_rows
@@ -157,19 +155,17 @@ class StateBar(Component):
 
     def __init__(self, parent, states):
         super().__init__(parent)
-        self.frame = tk.Frame(parent)
         self.states = states
-        self.frame.pack()
 
     def set_states(self, value):
         states = value
         self._states = {}
 
         for row, (name, value) in enumerate(states.items()):
-            name_label = tk.Label(self.frame, text=name)
+            name_label = tk.Label(self, text=name)
             name_label.grid(row=row, column=self.STATE_NAME_COL)
 
-            value_label = tk.Label(self.frame, text=value)
+            value_label = tk.Label(self, text=value)
             value_label.grid(row=row, column=self.STATE_VALUE_COL)
 
             self._states[name] = value_label

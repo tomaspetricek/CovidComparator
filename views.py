@@ -15,6 +15,7 @@ class View(tk.Frame):
         super().__init__(parent)
         self.controller = controller
         self.navigation = controller.app.view_classes
+        self.navigation.pack()
 
     def set_navigation(self, value):
         view_classes = value
