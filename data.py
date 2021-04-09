@@ -2,6 +2,8 @@ import pandas as pd
 import datetime
 import requests
 import io
+import csv
+from pathlib import Path
 
 def get_csv(url, encoding="utf-8"):
     with requests.Session() as s:
@@ -90,16 +92,49 @@ class MZCRStatsFetcher(DataFetcher):
         return data
 
 class WHOVaccinationFetcher(DataFetcher):
-    URL = ...
+    URL = "https://covid19.who.int/who-data/vaccination-data.csv"
 
     def fetch(self, from_date):
-        pass
+        # get data
+        csv_url = self.URL
+        content = get_csv(csv_url)
+        data = pd.read_csv(io.StringIO(content))
+
+        # keep only columns used in Dataset.COLUMN_NAMES
+        data = data[["DATE_UPDATED", "COUNTRY", "TOTAL_VACCINATIONS"]]
+
+        # rename columns based on Dataset.COLUMNS
+        n_rows = data.shape[0]
+        data.insert(3, "date loaded",  pd.Series(n_rows * [datetime.datetime.now()]))
+        data.columns = VaccinationDataset.COLUMN_NAMES
+
+        # change columns dtypes based on Dataset.COLUMN_DTYPES
+        data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
+
+        return data
 
 class MZCRVaccinationFetcher(DataFetcher):
-    URL = ...
+    URL = "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/zakladni-prehled.csv"
 
     def fetch(self, from_date):
-        pass
+        # get data
+        csv_url = self.URL
+        content = get_csv(csv_url)
+        data = pd.read_csv(io.StringIO(content))
+
+        # keep only columns used in Dataset.COLUMN_NAMES
+        data = data[["datum", "vykazana_ockovani_celkem"]]
+
+        # rename columns based on Dataset.COLUMNS
+        n_rows = data.shape[0]
+        data.insert(1, "country",  pd.Series(n_rows * ["Czechia"]))
+        data.insert(3, "date loaded",  pd.Series(n_rows * [datetime.datetime.now()]))
+        data.columns = VaccinationDataset.COLUMN_NAMES
+        # change columns dtypes based on Dataset.COLUMN_DTYPES
+        data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
+
+
+        return data
 
 class Dataset:
     """
@@ -149,12 +184,22 @@ class StatsDataset(Dataset):
         ...
 
     def load(self):
+        if Path(self.csv_filename).is_file():
+            # file exists
+            self.data = pd.read_csv(self.csv_filename)
+        
         self.fetcher.fetch(...)
 
 
+        self.save()
+
+    def save(self):
+        self.data.to_csv(self.csv_filename, index=False)
+
+
 class VaccinationDataset(Dataset):
-    COLUMN_NAMES = ["date posted", "total vaccinations"]
-    COLUMN_DTYPES = [...]
+    COLUMN_NAMES = ["date posted", "country", "total vaccinations", "date loaded"]
+    COLUMN_DTYPES = [datetime.datetime, str, int, datetime.datetime]
 
     def __init__(self, fetcher):
         super().__init__(fetcher)
@@ -169,6 +214,15 @@ class VaccinationDataset(Dataset):
         self.fetcher.fetch(...)
 
 
+        self.save()
+
+    def save(self):
+        self.data.to_csv(self.csv_filename, index=False)
+
+
 if __name__ == "__main__":
-    MZCRStatsFetcher().fetch(None)
-    #WHOStatsFetcher().fetch(None)
+    #MZCRStatsFetcher().fetch(None)
+    #MZCRVaccinationFetcher().fetch(None)
+
+    WHOStatsFetcher().fetch(None)
+    WHOVaccinationFetcher().fetch(None)
