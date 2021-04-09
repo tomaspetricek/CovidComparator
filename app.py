@@ -17,15 +17,15 @@ class Updater:
         self.app = app
         self.datasets = datasets
 
-    def update_vaccinations(self):
+    def _update_datasets(self):
         pass
 
-    def update_stats(self):
+    def _update_controllers(self):
         pass
-
+    
     def update(self):
-        self.update_vaccinations()
-        self.update_stats()
+        self._update_datasets()
+        self._update_controllers()
 
     def _keep_running(self):
         self.update()

@@ -23,6 +23,9 @@ class Controller:
     def show_view(self, context):
         self.app.viewer.show_view(context)
 
+    def update_app(self):
+        self.app.updater.update()
+
 
 class MainController(Controller):
     VIEW_CLASS = MainView
@@ -61,9 +64,6 @@ class DatasetIntegrityController(Controller):
              "diffrence total number of infected": diff_total_infected, "difference date posted": diff_date_posted})
 
     overview = property(get_overview, set_overview)
-
-    def update_stats(self):
-        self.app.updater.update_stats()
 
     def update(self):
         # self.status = ...
@@ -112,9 +112,6 @@ class VaccinationController(Controller):
         # update graph
         # self.view.update()
         pass
-
-    def update_vaccinations(self):
-        self.app.updater.update_vaccinations()
 
     def update(self):
         # self.status = ...
