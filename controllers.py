@@ -78,11 +78,11 @@ class VaccinationController(Controller):
 
     def __init__(self, app):
         super().__init__(app)
-        self.overview = df2#app.international_dataset
+        self.overview = self.app.vaccination_dataset.data
         # self.selectable_countries = app.countries
         # self.selected_countries = []
         # self.status = ...
-        # self.figure = self._overview
+        self.figure = self._overview
         self.view = self.VIEW_CLASS(app.frame, self)
 
     def get_overview(self):
@@ -90,12 +90,15 @@ class VaccinationController(Controller):
 
     def set_overview(self, value):
         vaccination_dataset = value
-        self._overview = vaccination_dataset[["date posted", "country", "total vaccinations"]].fillna(0)
+        self._overview = vaccination_dataset[["date posted", "country", "total vaccinations"]]
+        self._overview = self._overview.fillna(0)
 
     overview = property(get_overview, set_overview)
 
     def set_figure(self, value):
         self._figure, ax = plt.subplots(nrows=1, ncols=1)
+
+        # pick only countries from selected_countries and Czechia always
 
         for key, group in self._overview.groupby(["country"]):
             ax.scatter(group["date posted"], group["total vaccinations"], label=key)
@@ -103,11 +106,10 @@ class VaccinationController(Controller):
         plt.legend(loc='best')
         ax.set_xlabel("Date posted")
         ax.set_ylabel("Total vaccinations")
-        #ax.set_title("Va")
+        #ax.set_title("")
         self._figure.tight_layout()
 
     def get_figure(self):
-
         return self._figure
 
     figure = property(get_figure, set_figure)
@@ -129,6 +131,7 @@ class VaccinationController(Controller):
         # update overview based on new data
         # self.view.update()
         pass
+
 
 if __name__ == "__main__":
     test_data2 = [

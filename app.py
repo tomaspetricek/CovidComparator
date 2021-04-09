@@ -6,6 +6,9 @@ from utils import Logger
 import socket
 import datetime
 import time
+from data import WHOVaccinationFetcher, VaccinationDataset
+from config import *
+
 
 class Updater:
     """
@@ -50,12 +53,14 @@ class App(tk.Tk):
         DatasetIntegrityController,
     ]
 
-    def __init__(self, international_dataset, local_dataset):
+    def __init__(self, international_dataset, local_dataset, vaccination_dataset):
         super().__init__()
         #self.international_dataset = international_dataset
         #self.local_dataset = local_dataset
         #self.countries = ...
         #self.updater = ...  # Updater()
+        self.vaccination_dataset = vaccination_dataset
+        self.load()
         self.start_time = datetime.datetime.now()
         self.title(self.NAME)
         self.frame = None
@@ -105,11 +110,11 @@ class App(tk.Tk):
         """
         Load in data.
         """
-        self.international_dataset.load()
-        self.local_dataset.load(self.frame)
+        self.vaccination_dataset.load()
+        # self.international_dataset.load()
+        # self.local_dataset.load(self.frame)
 
     def run(self):
-        #self.load()
         #self.updater.run()
         self.mainloop()
         self.viewer.show_view()
@@ -152,8 +157,12 @@ class Viewer:
 
 
 if __name__ == '__main__':
-    logger = Logger('http://covid.martinpolacek.eu/writeLog.php')
-    logger.send_info("Aplikace spuštěna na " + str(socket.gethostname()))
-    app = App(None, None)
+    # logger = Logger('http://covid.martinpolacek.eu/writeLog.php')
+    # logger.send_info("Aplikace spuštěna na " + str(socket.gethostname()))
+
+    fetcher = WHOVaccinationFetcher()
+    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET, datetime.datetime(2020, 1, 1))
+
+    app = App(None, None, vaccination_dataset)
     app.run()
 

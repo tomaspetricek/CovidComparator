@@ -158,7 +158,7 @@ class Dataset:
         :param data: pd.DataFrame
         """
         self.fetcher = fetcher
-        self.data = None
+        self.data = pd.DataFrame(columns=self.COLUMN_NAMES)
         self.last_updated = None
         self.csv_filename = csv_filename
         self.date_from = date_from
@@ -182,10 +182,10 @@ class Dataset:
         if Path(self.csv_filename).is_file():
             # file exists
             self.data = pd.read_csv(self.csv_filename)
+            self.data['date posted'] = pd.to_datetime(self.data['date posted'], format='%Y-%m-%d')
             self.date_from = min(self.data["date posted"])
         
         self.update()
-
 
     def save(self):
         self.data.to_csv(self.csv_filename, index=False)

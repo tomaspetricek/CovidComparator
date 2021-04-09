@@ -68,12 +68,12 @@ class MainView(View):
 class VaccinationView(View):
     TITLE = "Vaccination Overview"
     N_COLUMNS = 2
-    N_ROWS = 2
+    N_ROWS = 3
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         # self.state_bar = StateBar(self, ...)
-        # self.graph = Graph(self, controller.figure)
+        self.graph = Graph(self, controller.figure)
         # self.search_bar = SearchBar(self, controller.countries, controller.add_country)
         # self.deselect_box =
         self.update_button = tk.Button(self, text="Update", command=self.controller.update_app)
@@ -83,6 +83,7 @@ class VaccinationView(View):
         self.navigation.grid(row=0, column=0, columnspan=self.N_COLUMNS, sticky="we")
         self.title.grid(row=1, column=0)
         self.update_button.grid(row=1, column=1)
+        self.graph.grid(row=2, column=1)
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
 
