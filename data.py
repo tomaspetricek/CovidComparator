@@ -33,11 +33,16 @@ class DataFetcher:
         # remove data before from_date
         pass
 
+    def remove_data_before(self, data, column_name, date_from):
+        index_names = data[ data[column_name] < date_from ].index
+        data.drop(index_names, inplace = True)
+        return data
+
 
 class WHOStatsFetcher(DataFetcher):
     URL = "https://covid19.who.int/WHO-COVID-19-global-data.csv"
 
-    def _fetch_stats(self):
+    def fetch(self, from_date):
         # get data
         csv_url = self.URL
         content = get_csv(csv_url)
@@ -55,11 +60,9 @@ class WHOStatsFetcher(DataFetcher):
         # change columns dtypes based on Dataset.COLUMN_DTYPES
         data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
 
-        return data
+        data = self.remove_data_before(data, 'date posted', from_date)
 
-    def fetch(self, from_date):
-        stats = self._fetch_stats()
-        return stats
+        return data
 
 
 class MZCRStatsFetcher(DataFetcher):
@@ -89,6 +92,8 @@ class MZCRStatsFetcher(DataFetcher):
 
         # remove data before from_date
 
+        data = self.remove_data_before(data, 'date posted', from_date)
+
         return data
 
 class WHOVaccinationFetcher(DataFetcher):
@@ -110,6 +115,8 @@ class WHOVaccinationFetcher(DataFetcher):
 
         # change columns dtypes based on Dataset.COLUMN_DTYPES
         data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
+
+        data = self.remove_data_before(data, 'date posted', from_date)
 
         return data
 
@@ -133,6 +140,7 @@ class MZCRVaccinationFetcher(DataFetcher):
         # change columns dtypes based on Dataset.COLUMN_DTYPES
         data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
 
+        data = self.remove_data_before(data, 'date posted', from_date)
 
         return data
 
@@ -143,86 +151,95 @@ class Dataset:
     COLUMN_NAMES = None
     COLUMN_DTYPES = None
 
-    def __init__(self, fetcher, csv_filename):
+    def __init__(self, fetcher, csv_filename, date_from):
         """
 
         :param fetcher: DataFetcher
         :param data: pd.DataFrame
         """
         self.fetcher = fetcher
-        self.data = ...
-        self.last_updated = ...
+        self.data = None
+        self.last_updated = None
         self.csv_filename = csv_filename
+        self.date_from = date_from
+
+    def _combine_data(self, data):
+        data = data.set_index(["date posted", "country"])
+        self.data = self.data.set_index(["date posted", "country"])
+
+        self.data = data.combine_first(self.data).reset_index()
 
     def update(self):
-        # add all data that are different and change old ones
-        # - some data can be changed after initial value was placed
-        pass
-
-    def load(self):
-        # check if there are csv files in home directory if so load them
-        # fetch new data
-        # save whole dataset rewriting old one
-        # self.save
-        pass
-
-    def save(self):
-        # rewrite old csv file
-        pass
-
-class StatsDataset(Dataset):
-    COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected", "date loaded"]
-    COLUMN_DTYPES = [datetime.datetime, str, int, int, datetime.datetime]
-
-    def __init__(self, fetcher):
-        super().__init__(fetcher)
-        pass
-
-    def update(self):
-        self.fetcher.fetch(...)
+        data = self.fetcher.fetch(self.date_from)
         # update whole data, because data can be changed after initial release
-        ...
+
+        self._combine_data(data)
+
+        self.save()
+        self.last_updated = datetime.datetime.now()
 
     def load(self):
         if Path(self.csv_filename).is_file():
             # file exists
             self.data = pd.read_csv(self.csv_filename)
+            self.date_from = min(self.data["date posted"])
         
-        self.fetcher.fetch(...)
+        self.update()
 
-
-        self.save()
 
     def save(self):
         self.data.to_csv(self.csv_filename, index=False)
+
+class StatsDataset(Dataset):
+    COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected", "date loaded"]
+    COLUMN_DTYPES = [datetime.datetime, str, int, int, datetime.datetime]
 
 
 class VaccinationDataset(Dataset):
     COLUMN_NAMES = ["date posted", "country", "total vaccinations", "date loaded"]
     COLUMN_DTYPES = [datetime.datetime, str, int, datetime.datetime]
 
-    def __init__(self, fetcher):
-        super().__init__(fetcher)
-        pass
-
-    def update(self):
-        self.fetcher.fetch(...)
-        # update whole data, because data can be changed after initial release
-        ...
-
-    def load(self):
-        self.fetcher.fetch(...)
-
-
-        self.save()
-
-    def save(self):
-        self.data.to_csv(self.csv_filename, index=False)
-
 
 if __name__ == "__main__":
     #MZCRStatsFetcher().fetch(None)
     #MZCRVaccinationFetcher().fetch(None)
 
-    WHOStatsFetcher().fetch(None)
-    WHOVaccinationFetcher().fetch(None)
+    #WHOStatsFetcher().fetch(None)
+    #WHOVaccinationFetcher().fetch(None)
+
+    test_data = [[datetime.datetime(2020, 5, 17), "Czechia", 110], [datetime.datetime(2020, 5, 17), "Slovakia", 110],
+       [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 110]]
+    df = pd.DataFrame(test_data, columns = VaccinationDataset.COLUMN_NAMES[:-1])
+
+    test_data2 = [[datetime.datetime(2020, 5, 17), "Czechia", 110], [datetime.datetime(2020, 5, 17), "Slovakia", 110],
+       [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 130],
+       [datetime.datetime(2020, 5, 19), "Slovakia", 130], [datetime.datetime(2020, 5, 20), "Slovakia", 140]]
+    df2 = pd.DataFrame(test_data2, columns = VaccinationDataset.COLUMN_NAMES[:-1])
+
+    #d = WHOVaccinationFetcher().fetch(datetime.datetime(2021,4,1))
+    #xprint(d)
+
+    vaccinationDataset = VaccinationDataset(None, None, datetime.datetime(2020,4,1))
+    vaccinationDataset.data = df
+    vaccinationDataset._combine_data(df2)
+    print(vaccinationDataset.data)
+
+    
+
+
+    test_data = [[datetime.datetime(2020, 5, 17), "Czechia", 110], [datetime.datetime(2020, 5, 17), "Slovakia", 110],
+       [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 110]]
+    df = pd.DataFrame(test_data, columns = StatsDataset.COLUMN_NAMES[:-2])
+
+    test_data2 = [[datetime.datetime(2020, 5, 17), "Czechia", 110], [datetime.datetime(2020, 5, 17), "Slovakia", 110],
+       [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 130],
+       [datetime.datetime(2020, 5, 19), "Slovakia", 130], [datetime.datetime(2020, 5, 20), "Slovakia", 140]]
+    df2 = pd.DataFrame(test_data2, columns = StatsDataset.COLUMN_NAMES[:-2])
+
+    #d = WHOVaccinationFetcher().fetch(datetime.datetime(2021,4,1))
+    #xprint(d)
+
+    statsDataset = StatsDataset(None, None, datetime.datetime(2020,4,1))
+    statsDataset.data = df
+    statsDataset._combine_data(df2)
+    print(statsDataset.data)
