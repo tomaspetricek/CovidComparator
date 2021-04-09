@@ -59,7 +59,7 @@ class MainView(View):
         self.layout()
 
     def layout(self):
-        self.navigation.grid(row=0, column=0, columnspan=2, sticky="we")
+        self.navigation.grid(row=0, column=0, columnspan=self.N_COLUMNS, sticky="we")
         self.title.grid(row=1, column=0)
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
@@ -76,11 +76,13 @@ class VaccinationView(View):
         # self.graph = Graph(self, controller.figure)
         # self.search_bar = SearchBar(self, controller.countries, controller.add_country)
         # self.deselect_box =
+        self.update_button = tk.Button(self, text="Update", command=self.controller.update_vaccinations)
         self.layout()
 
     def layout(self):
-        self.navigation.grid(row=0, column=0, columnspan=2, sticky="we")
+        self.navigation.grid(row=0, column=0, columnspan=self.N_COLUMNS, sticky="we")
         self.title.grid(row=1, column=0)
+        self.update_button.grid(row=1, column=1)
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
 
@@ -101,11 +103,13 @@ class DatasetIntegrityView(View):
         super().__init__(parent, controller)
         # self.state_bar = StateBar(self, ...)
         # self.table = Table(self, controller.overview)
+        self.update_button = tk.Button(self, text="Update", command=self.controller.update_stats)
         self.layout()
 
     def layout(self):
-        self.navigation.grid(row=0, column=0, columnspan=2, sticky="we")
+        self.navigation.grid(row=0, column=0, columnspan=self.N_COLUMNS, sticky="we")
         self.title.grid(row=1, column=0)
+        self.update_button.grid(row=1, column=1)
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
 

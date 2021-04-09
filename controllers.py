@@ -62,6 +62,9 @@ class DatasetIntegrityController(Controller):
 
     overview = property(get_overview, set_overview)
 
+    def update_stats(self):
+        self.app.updater.update_stats()
+
     def update(self):
         # self.status = ...
         # update overview based on new data
@@ -109,6 +112,9 @@ class VaccinationController(Controller):
         # update graph
         # self.view.update()
         pass
+
+    def update_vaccinations(self):
+        self.app.updater.update_vaccinations()
 
     def update(self):
         # self.status = ...

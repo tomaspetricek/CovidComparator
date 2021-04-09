@@ -20,6 +20,12 @@ class Updater:
         for controller in self.app.controllers:
             controller.update()
 
+    def update_vaccinations(self):
+        pass
+
+    def update_stats(self):
+        pass
+
     def update(self, dataset):
         updated = dataset.update()
         if updated:
