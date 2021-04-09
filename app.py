@@ -5,6 +5,7 @@ from controllers import MainController, VaccinationController, DatasetIntegrityC
 from utils import Logger
 import socket
 import datetime
+import time
 
 class Updater:
     """
@@ -16,29 +17,25 @@ class Updater:
         self.app = app
         self.datasets = datasets
 
-    def _update_controllers(self):
-        for controller in self.app.controllers:
-            controller.update()
-
     def update_vaccinations(self):
         pass
 
     def update_stats(self):
         pass
 
-    def update(self, dataset):
-        updated = dataset.update()
-        if updated:
-            self._update_controllers()
-            self.app.viewer.update()
+    def update(self):
+        self.update_vaccinations()
+        self.update_stats()
 
-        # create new thread
-        threading.Timer(self.UPDATE_FREQUENCY, self.update, dataset)
+    def _keep_running(self):
+        self.update()
+        threading.Timer(self.UPDATE_FREQUENCY, self._keep_running)
 
     def run(self):
-        for dataset in self.datasets:
-            if dataset.update_time:
-                self.update(dataset)
+        """
+        Runs periodic updates based on UPDATE_FREQUENCY.
+        """
+        self._keep_running()
 
 
 class App(tk.Tk):
