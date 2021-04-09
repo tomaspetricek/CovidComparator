@@ -78,25 +78,36 @@ class VaccinationController(Controller):
 
     def __init__(self, app):
         super().__init__(app)
-        # self.overview = app.international_dataset
+        self.overview = df2#app.international_dataset
         # self.selectable_countries = app.countries
         # self.selected_countries = []
         # self.status = ...
         # self.figure = self._overview
         self.view = self.VIEW_CLASS(app.frame, self)
 
+    def get_overview(self):
+        return self._overview
+
+    def set_overview(self, value):
+        vaccination_dataset = value
+        self._overview = vaccination_dataset[["date posted", "country", "total vaccinations"]].fillna(0)
+
+    overview = property(get_overview, set_overview)
+
     def set_figure(self, value):
-        overview = value
-        self._figure = plt.Figure(figsize=(5, 4))
-        ax = self._figure.add_subplot(111)
-        x = overview[...]
-        y = overview[...]
-        ax.scatter(x, y, color='g')
-        ax.legend([...])
-        ax.set_xlabel(...)
-        ax.set_title(...)
+        self._figure, ax = plt.subplots(nrows=1, ncols=1)
+
+        for key, group in self._overview.groupby(["country"]):
+            ax.scatter(group["date posted"], group["total vaccinations"], label=key)
+
+        plt.legend(loc='best')
+        ax.set_xlabel("Date posted")
+        ax.set_ylabel("Total vaccinations")
+        #ax.set_title("Va")
+        self._figure.tight_layout()
 
     def get_figure(self):
+
         return self._figure
 
     figure = property(get_figure, set_figure)
@@ -119,20 +130,17 @@ class VaccinationController(Controller):
         # self.view.update()
         pass
 
-
-class Overview:
-    pass
-
-
-class VaccinationOverview(Overview):
-    pass
-
-
-class DatasetIntegrityOverview(Overview):
-    pass
-
-
 if __name__ == "__main__":
-    controller = DatasetIntegrityController(None)
-    cr_data = MZCRFetcher().fetch(None)
-    controller.set_data((cr_data, cr_data))
+    test_data2 = [
+        [datetime.datetime(2020, 1, 1), "Czechia", 110],
+        [datetime.datetime(2020, 1, 2), "Slovakia", 110],
+        [datetime.datetime(2020, 1, 2), "Poland", 110],
+        [datetime.datetime(2020, 5, 18), "Slovakia", 130],
+        [datetime.datetime(2020, 5, 19), "Slovakia", 130],
+        [datetime.datetime(2020, 5, 20), "Slovakia", 140]
+    ]
+
+    df2 = pd.DataFrame(test_data2, columns=["date posted", "country", "total vaccinations"])
+    controller = VaccinationController(None)
+    #cr_data = MZCRFetcher().fetch(None)
+    #controller.set_data((cr_data, cr_data))
