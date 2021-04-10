@@ -78,10 +78,6 @@ class SearchBar(Component):
         value = widget.get(index)
         self.on_select(value)
 
-class StatusBar(Component):
-    def __init__(self, parent):
-        super().__init__(parent)
-        pass
 
 class Graph(Component):
     """
