@@ -40,8 +40,8 @@ class DatasetIntegrityController(Controller):
 
     def __init__(self, app):
         super().__init__(app)
-        # self.status = ...
-        # self.overview = self.app.international_dataset, self.app.local_dataset
+        self.status = ""
+        self.overview = self.app.international_dataset, self.app.local_dataset
         self.view = self.VIEW_CLASS(app.frame, self)
 
     def get_overview(self):
@@ -66,10 +66,13 @@ class DatasetIntegrityController(Controller):
     overview = property(get_overview, set_overview)
 
     def update(self):
-        # self.status = ...
+        self.status = "Aktualizuji..."
+
         # update overview based on new data
-        # self.view.update()
-        pass
+        self.app.updater.update()
+        self.overview = self.app.international_dataset, self.app.local_dataset
+
+        self.view.update()
 
 
 class VaccinationController(Controller):
@@ -79,9 +82,9 @@ class VaccinationController(Controller):
     def __init__(self, app):
         super().__init__(app)
         self.overview = self.app.vaccination_dataset.data
-        # self.selectable_countries = app.countries
-        # self.selected_countries = []
-        # self.status = ...
+        self.selectable_countries = app.countries
+        self.selected_countries = []
+        self.status = ""
         self.figure = self._overview
         self.view = self.VIEW_CLASS(app.frame, self)
 
@@ -101,7 +104,8 @@ class VaccinationController(Controller):
         # pick only countries from selected_countries and Czechia always
 
         for key, group in self._overview.groupby(["country"]):
-            ax.scatter(group["date posted"], group["total vaccinations"], label=key)
+            if key in self.selected_countries or key == "Czechia":
+                ax.scatter(group["date posted"], group["total vaccinations"], label=key)
 
         plt.legend(loc='best')
         ax.set_xlabel("Date posted")
@@ -116,22 +120,35 @@ class VaccinationController(Controller):
 
     def add_country(self, country):
         # add country to selected countries
+        if country in self.selectable_countries:
+            self.selected_countries.append(country)
+            self.status = "Země byla přidána"
+        else:
+            self.status = "Tuto zemi nelze přidat"
+
         # update graph
-        # self.view.update_graph()
-        pass
+        self.view.update_graph()
 
     def remove_country(self, country):
         # remove country from selected countries
+        if country in self.selected_countries:
+            self.selected_countries.remove(country)
+            self.status = "Země byla odebrána"
+        else:
+            self.status = "Tuto zemi nelze odebrat"
+
         # update graph
-        # self.view.update()
-        pass
+        self.view.update_graph()
 
     def update(self):
-        # self.status = ...
-        # update overview based on new data
-        # self.view.update()
-        pass
+        self.status = "Aktualizuji..."
 
+        # update overview based on new data
+        self.app.updater.update()
+        self.overview = self.app.vaccination_dataset.data
+
+        # update graph
+        self.view.update_graph()
 
 if __name__ == "__main__":
     test_data2 = [
