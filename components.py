@@ -82,7 +82,8 @@ class Graph(Component):
     """
     def __init__(self, parent, figure):
         super().__init__(parent)
-        self.canvas = figure
+        self.figure = figure
+        self.canvas = self.figure
 
     def set_canvas(self, value):
         figure = value
@@ -93,9 +94,13 @@ class Graph(Component):
     def get_canvas(self):
         return self._canvas
 
-    def update(self, figure):
-        self._canvas.destroy()
+    def _update_graph(self, figure):
+        self.canvas.destroy()
+        plt.close('all')
         self.canvas = figure
+
+    def update(self, figure):
+        self._update_graph(figure)
 
     canvas = property(get_canvas, set_canvas)
 
