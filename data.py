@@ -151,7 +151,7 @@ class Dataset:
     COLUMN_NAMES = None
     COLUMN_DTYPES = None
 
-    def __init__(self, fetcher, csv_filename, date_from):
+    def __init__(self, fetcher, csv_filename, date_from, name):
         """
 
         :param fetcher: DataFetcher
@@ -162,6 +162,7 @@ class Dataset:
         self.last_updated = None
         self.csv_filename = csv_filename
         self.date_from = date_from
+        self.name = name
 
     def _combine_data(self, data):
         data = data.set_index(["date posted", "country"])

@@ -6,7 +6,7 @@ from utils import Logger
 import socket
 import datetime
 import time
-from data import WHOVaccinationFetcher, VaccinationDataset
+from data import *
 from config import *
 
 
@@ -16,15 +16,17 @@ class Updater:
     """
     UPDATE_FREQUENCY = 15 * 60  # waiting time
 
-    def __init__(self, datasets, app):
-        self.app = app
+    def __init__(self, datasets, controllers):
+        self.controllers = controllers
         self.datasets = datasets
 
     def _update_datasets(self):
-        pass
+        for dataset in self.datasets:
+            dataset.update()
 
     def _update_controllers(self):
-        pass
+        for controller in self.controllers:
+            controller.update()
     
     def update(self):
         self._update_datasets()
@@ -55,10 +57,9 @@ class App(tk.Tk):
 
     def __init__(self, international_dataset, local_dataset, vaccination_dataset):
         super().__init__()
-        #self.international_dataset = international_dataset
-        #self.local_dataset = local_dataset
-        #self.countries = ...
-        #self.updater = ...  # Updater()
+        self.international_dataset = international_dataset
+        self.vaccination_dataset = vaccination_dataset
+        self.local_dataset = local_dataset
         self.vaccination_dataset = vaccination_dataset
         self.load()
         self.start_time = datetime.datetime.now()
@@ -68,6 +69,8 @@ class App(tk.Tk):
         self.controllers = self.CONTROLLER_CLASSES
         self.viewer = Viewer(self.controllers, MainController.VIEW_CLASS)
         self.geometry("750x500")
+        self.updater = Updater([self.international_dataset, self.vaccination_dataset, self.local_dataset],
+                               self.controllers)
 
     def set_frame(self, value):
         self._frame = tk.Frame()
@@ -111,8 +114,8 @@ class App(tk.Tk):
         Load in data.
         """
         self.vaccination_dataset.load()
-        # self.international_dataset.load()
-        # self.local_dataset.load(self.frame)
+        self.international_dataset.load()
+        self.local_dataset.load()
 
     def run(self):
         #self.updater.run()
@@ -161,8 +164,12 @@ if __name__ == '__main__':
     # logger.send_info("Aplikace spuštěna na " + str(socket.gethostname()))
 
     fetcher = WHOVaccinationFetcher()
-    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET, datetime.datetime(2020, 1, 1))
+    mzcr_fetcher = MZCRStatsFetcher()
+    who_fecther = WHOStatsFetcher()
 
-    app = App(None, None, vaccination_dataset)
+    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET, datetime.datetime(2020, 1, 1), "vaccinations")
+    local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, datetime.datetime(2020, 1, 1), "czech stats")
+    international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, datetime.datetime(2020, 1, 1), "international stats")
+    app = App(local_dataset, international_dataset, vaccination_dataset)
     app.run()
 

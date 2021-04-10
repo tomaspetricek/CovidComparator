@@ -40,7 +40,7 @@ class DatasetIntegrityController(Controller):
 
     def __init__(self, app):
         super().__init__(app)
-        self.status = ""
+        self.status = self.app.international_dataset, self.app.local_dataset
         self.overview = self.app.international_dataset, self.app.local_dataset
         self.view = self.VIEW_CLASS(app.frame, self)
 
@@ -49,10 +49,10 @@ class DatasetIntegrityController(Controller):
 
     def set_overview(self, value):
         international_dataset, local_dataset = value
-        filtered_international_dataset = international_dataset.loc[international_dataset["country"] == "Czechia"]
+        filtered_international_dataset = international_dataset.data.loc[international_dataset.data["country"] == "Czechia"]
         filtered_international_dataset = filtered_international_dataset.dropna(how='any', axis=0)
 
-        merged_dataset = pd.merge_asof(international_dataset, local_dataset, on='date posted')
+        merged_dataset = pd.merge_asof(international_dataset.data, local_dataset.data, on='date posted')
         diff_daily_infected = merged_dataset["daily increase of infected_x"] - merged_dataset[
             "daily increase of infected_y"]
         diff_total_infected = merged_dataset["total number of infected_x"] - merged_dataset[
@@ -65,11 +65,23 @@ class DatasetIntegrityController(Controller):
 
     overview = property(get_overview, set_overview)
 
+    def set_status(self, value):
+        datasets = value
+
+        self._status = dict()
+        for dataset in datasets:
+            self._status[dataset.name] = dataset.last_updated
+
+    def get_status(self):
+        return self._status
+
+
+    status = property(get_status, set_status)
+
     def update(self):
-        self.status = "Aktualizuji..."
+        self._status = self.app.international_dataset, self.app.local_dataset
 
         # update overview based on new data
-        self.app.updater.update()
         self.overview = self.app.international_dataset, self.app.local_dataset
 
         self.view.update()
@@ -82,9 +94,9 @@ class VaccinationController(Controller):
     def __init__(self, app):
         super().__init__(app)
         self.overview = self.app.vaccination_dataset.data
-        self.selectable_countries = app.countries
-        self.selected_countries = []
-        self.status = ""
+        self.selectable_countries = self.app.vaccination_dataset.data["country"].unique()
+        self.selected_countries = ["Germany", "Angola"]
+        self.status = self.app.vaccination_dataset
         self.figure = self._overview
         self.view = self.VIEW_CLASS(app.frame, self)
 
@@ -122,33 +134,36 @@ class VaccinationController(Controller):
         # add country to selected countries
         if country in self.selectable_countries:
             self.selected_countries.append(country)
-            self.status = "Země byla přidána"
-        else:
-            self.status = "Tuto zemi nelze přidat"
 
         # update graph
-        self.view.update_graph()
+        self.view.update()
 
     def remove_country(self, country):
         # remove country from selected countries
         if country in self.selected_countries:
             self.selected_countries.remove(country)
-            self.status = "Země byla odebrána"
-        else:
-            self.status = "Tuto zemi nelze odebrat"
 
         # update graph
-        self.view.update_graph()
+        self.view.update()
+
+    def get_status(self):
+        return self._status
+
+    def set_status(self, value):
+        dataset = value
+
+        self._status = {dataset.name: dataset.last_updated}
+
+    status = property(get_status, set_status)
 
     def update(self):
-        self.status = "Aktualizuji..."
+        self.status = self.app.vaccination_dataset
 
         # update overview based on new data
-        self.app.updater.update()
         self.overview = self.app.vaccination_dataset.data
 
         # update graph
-        self.view.update_graph()
+        self.view.update()
 
 if __name__ == "__main__":
     test_data2 = [
