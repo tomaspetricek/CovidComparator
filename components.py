@@ -37,9 +37,12 @@ class ListBox(Component):
     def _on_select_event_handler(self, event):
         # Note here that Tkinter passes an event object to onselect()
         widget = event.widget
-        index = int(widget.curselection()[0])
-        value = widget.get(index)
-        self.on_select(value)
+        cursor_selection = widget.curselection()
+
+        if cursor_selection != ():
+            index = cursor_selection[0]
+            value = widget.get(index)
+            self.on_select(value)
 
     def _update_items(self, items):
         # clear previous data
@@ -48,6 +51,9 @@ class ListBox(Component):
         # put new data
         for item in items:
             self._list_box.insert('end', item)
+            
+    def update(self, items):
+        self._update_items(items)
 
 
 class SearchBar(Component):
@@ -58,14 +64,14 @@ class SearchBar(Component):
         super().__init__(parent)
         self.items = items
         self.search_box = None
-        self.advisor = self.items
+        self.advisor = ListBox(self, items, on_select)
         self.on_select = on_select
         self.layout()
         self.make_flexible(n_rows=2, n_cols=1)
 
     def layout(self):
         self._search_box.grid(row=0, column=0)
-        self._advisor.grid(row=1, column=0)
+        self.advisor.grid(row=1, column=0)
 
     def set_search_box(self, value):
         self._search_box = tk.Entry(self)
@@ -75,17 +81,6 @@ class SearchBar(Component):
         return self._search_box
 
     search_box = property(get_search_box, set_search_box)
-
-    def set_advisor(self, value):
-        items = value
-        self._advisor = tk.Listbox(self)
-        self._update_advisor(items)
-        self.advisor.bind("<<ListboxSelect>>", self._on_select)
-
-    def get_advisor(self):
-        return self._advisor
-
-    advisor = property(get_advisor, set_advisor)
 
     def _check_search(self, event):
         target = event.widget.get()
@@ -98,15 +93,7 @@ class SearchBar(Component):
                 if target.lower() in item.lower():
                     items_to_display.append(item)
 
-        self._update_advisor(items_to_display)
-
-    def _update_advisor(self, items_to_display):
-        # clear previous data
-        self.advisor.delete(0, 'end')
-
-        # put new data
-        for item in items_to_display:
-            self.advisor.insert('end', item)
+        self.advisor.update(items_to_display)
 
     def _on_select(self, event):
         # Note here that Tkinter passes an event object to onselect()
@@ -114,6 +101,10 @@ class SearchBar(Component):
         index = int(widget.curselection()[0])
         value = widget.get(index)
         self.on_select(value)
+        
+    def update(self, items):
+        self.items = items
+        self.advisor.update(items)
 
 
 class Graph(Component):
@@ -237,6 +228,14 @@ class StateBar(Component):
         return self._states
 
     states = property(get_states, set_states)
+
+    def _update_states(self, states):
+        for name, label in self._states.items():
+            label.config(text=states[name])
+
+    def update(self, states):
+        self._update_states(states)
+        
 
 
 
