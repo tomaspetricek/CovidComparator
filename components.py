@@ -86,11 +86,16 @@ class Graph(Component):
 
     def set_canvas(self, value):
         figure = value
-        self._canvas = FigureCanvasTkAgg(figure, self)
-        self._canvas.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
+        canvas = FigureCanvasTkAgg(figure, self)
+        self._canvas = canvas.get_tk_widget()
+        self._canvas.pack(side=tk.LEFT, fill=tk.BOTH)
 
     def get_canvas(self):
         return self._canvas
+
+    def update(self, figure):
+        self._canvas.destroy()
+        self.canvas = figure
 
     canvas = property(get_canvas, set_canvas)
 

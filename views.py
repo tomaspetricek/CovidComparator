@@ -74,7 +74,7 @@ class VaccinationView(View):
         super().__init__(parent, controller)
         # self.state_bar = StateBar(self, ...)
         self.graph = Graph(self, controller.figure)
-        # self.search_bar = SearchBar(self, controller.countries, controller.add_country)
+        self.search_bar = SearchBar(self, controller.selectable_countries, controller.add_country)
         # self.deselect_box =
         self.update_button = tk.Button(self, text="Update", command=self.controller.update_app)
         self.layout()
@@ -83,6 +83,7 @@ class VaccinationView(View):
         self.navigation.grid(row=0, column=0, columnspan=self.N_COLUMNS, sticky="we")
         self.title.grid(row=1, column=0)
         self.update_button.grid(row=1, column=1)
+        self.search_bar.grid(row=2, column=0)
         self.graph.grid(row=2, column=1)
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
@@ -90,9 +91,8 @@ class VaccinationView(View):
     def update(self):
         # self.state.update(self.controller.state)
         # self.search_bar.update(self.controller.selectable_countries)
-        # self.graph.update(self.controller.figure)
+        self.graph.update(self.controller.figure)
         # self.deselect_box.update(self.selected_countries)
-        pass
 
 
 class DatasetIntegrityView(View):

@@ -52,7 +52,7 @@ class DatasetIntegrityController(Controller):
         filtered_international_dataset = international_dataset.data.loc[international_dataset.data["country"] == "Czechia"]
         filtered_international_dataset = filtered_international_dataset.dropna(how='any', axis=0)
 
-        merged_dataset = pd.merge_asof(international_dataset.data, local_dataset.data, on='date posted')
+        merged_dataset = pd.merge_asof(filtered_international_dataset, local_dataset.data, on='date posted')
         diff_daily_infected = merged_dataset["daily increase of infected_x"] - merged_dataset[
             "daily increase of infected_y"]
         diff_total_infected = merged_dataset["total number of infected_x"] - merged_dataset[
@@ -75,7 +75,6 @@ class DatasetIntegrityController(Controller):
     def get_status(self):
         return self._status
 
-
     status = property(get_status, set_status)
 
     def update(self):
@@ -94,8 +93,8 @@ class VaccinationController(Controller):
     def __init__(self, app):
         super().__init__(app)
         self.overview = self.app.vaccination_dataset.data
-        self.selectable_countries = self.app.vaccination_dataset.data["country"].unique()
-        self.selected_countries = ["Germany", "Angola"]
+        self.selectable_countries = list(self.app.vaccination_dataset.data["country"].unique())
+        self.selected_countries = []
         self.status = self.app.vaccination_dataset
         self.figure = self._overview
         self.view = self.VIEW_CLASS(app.frame, self)
@@ -115,9 +114,9 @@ class VaccinationController(Controller):
 
         # pick only countries from selected_countries and Czechia always
 
-        for key, group in self._overview.groupby(["country"]):
-            if key in self.selected_countries or key == "Czechia":
-                ax.scatter(group["date posted"], group["total vaccinations"], label=key)
+        for country, group in self._overview.groupby(["country"]):
+            if country in self.selected_countries or country == "Czechia":
+                ax.scatter(group["date posted"], group["total vaccinations"], label=country)
 
         plt.legend(loc='best')
         ax.set_xlabel("Date posted")
@@ -134,6 +133,9 @@ class VaccinationController(Controller):
         # add country to selected countries
         if country in self.selectable_countries:
             self.selected_countries.append(country)
+            self.selectable_countries.remove(country)
+
+        self.figure = self._overview
 
         # update graph
         self.view.update()
@@ -142,6 +144,9 @@ class VaccinationController(Controller):
         # remove country from selected countries
         if country in self.selected_countries:
             self.selected_countries.remove(country)
+            self.selectable_countries.append(country)
+
+        self.figure = self._overview
 
         # update graph
         self.view.update()
@@ -161,6 +166,8 @@ class VaccinationController(Controller):
 
         # update overview based on new data
         self.overview = self.app.vaccination_dataset.data
+
+        self.figure = self._overview
 
         # update graph
         self.view.update()
