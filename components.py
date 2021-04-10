@@ -9,6 +9,9 @@ class Component(tk.Frame, FlexibleMixin):
     def __init__(self, parent):
         super().__init__(parent)
 
+    def layout(self):
+        pass
+
 
 class SearchBar(Component):
     """
@@ -20,10 +23,15 @@ class SearchBar(Component):
         self.search_box = None
         self.advisor = self.items
         self.on_select = on_select
+        self.layout()
+        self.make_flexible(n_rows=2, n_cols=1)
+
+    def layout(self):
+        self._search_box.grid(row=0, column=0)
+        self._advisor.grid(row=1, column=0)
 
     def set_search_box(self, value):
         self._search_box = tk.Entry(self)
-        self._search_box.pack()
         self._search_box.bind('<KeyRelease>', self._check_search)
 
     def get_search_box(self):
@@ -34,7 +42,6 @@ class SearchBar(Component):
     def set_advisor(self, value):
         items = value
         self._advisor = tk.Listbox(self)
-        self._advisor.pack()
         self._update_advisor(items)
         self.advisor.bind("<<ListboxSelect>>", self._on_select)
 
@@ -84,12 +91,16 @@ class Graph(Component):
         super().__init__(parent)
         self.figure = figure
         self.canvas = self.figure
+        self.layout()
+        self.make_flexible(n_rows=1, n_cols=1)
+
+    def layout(self):
+        self._canvas.grid(row=0, column=0)
 
     def set_canvas(self, value):
         figure = value
         canvas = FigureCanvasTkAgg(figure, self)
         self._canvas = canvas.get_tk_widget()
-        self._canvas.pack(side=tk.LEFT, fill=tk.BOTH)
 
     def get_canvas(self):
         return self._canvas
@@ -101,6 +112,7 @@ class Graph(Component):
 
     def update(self, figure):
         self._update_graph(figure)
+        self.layout()
 
     canvas = property(get_canvas, set_canvas)
 
