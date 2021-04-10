@@ -49,6 +49,9 @@ class App(tk.Tk):
     """
     NAME = "Covid Comparator"
 
+    MIN_WIDTH = 1000
+    MIN_HEIGHT = 550
+
     CONTROLLER_CLASSES = [
         MainController,
         VaccinationController,
@@ -68,7 +71,7 @@ class App(tk.Tk):
         self.view_classes = self.CONTROLLER_CLASSES
         self.controllers = self.CONTROLLER_CLASSES
         self.viewer = Viewer(self.controllers, MainController.VIEW_CLASS)
-        self.geometry("750x500")
+        self.minsize(width=self.MIN_WIDTH, height=self.MIN_HEIGHT)
         self.updater = Updater([self.international_dataset, self.vaccination_dataset, self.local_dataset],
                                self.controllers)
 

@@ -41,7 +41,7 @@ class DatasetIntegrityController(Controller):
     def __init__(self, app):
         super().__init__(app)
         self.status = self.app.international_dataset, self.app.local_dataset
-        self.overview = self.app.international_dataset, self.app.local_dataset
+        # self.overview = self.app.international_dataset, self.app.local_dataset
         self.view = self.VIEW_CLASS(app.frame, self)
 
     def get_overview(self):

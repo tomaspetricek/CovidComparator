@@ -174,10 +174,13 @@ class Navigation(Component):
 class StateBar(Component):
     STATE_NAME_COL = 0
     STATE_VALUE_COL = 1
+    N_COLUMNS = 2
 
     def __init__(self, parent, states):
         super().__init__(parent)
         self.states = states
+        n_rows = len(states)
+        self.make_flexible(n_rows=n_rows, n_cols=self.N_COLUMNS)
 
     def set_states(self, value):
         states = value
