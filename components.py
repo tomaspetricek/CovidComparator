@@ -12,6 +12,43 @@ class Component(tk.Frame, FlexibleMixin):
     def layout(self):
         pass
 
+class ListBox(Component):
+    def __init__(self, parent, items, on_select):
+        super().__init__(parent)
+        self.list_box = items
+        self.on_select = on_select
+        self.layout()
+        self.make_flexible(n_rows=1, n_cols=1)
+
+    def layout(self):
+        self._list_box.grid(row=0, column=0)
+
+    def set_list_box(self, value):
+        items = value
+        self._list_box = tk.Listbox(self)
+        self._update_items(items)
+        self._list_box.bind("<<ListboxSelect>>", self._on_select_event_handler)
+
+    def get_list_box(self):
+        return self._list_box
+
+    list_box = property(get_list_box, set_list_box)
+
+    def _on_select_event_handler(self, event):
+        # Note here that Tkinter passes an event object to onselect()
+        widget = event.widget
+        index = int(widget.curselection()[0])
+        value = widget.get(index)
+        self.on_select(value)
+
+    def _update_items(self, items):
+        # clear previous data
+        self._list_box.delete(0, 'end')
+
+        # put new data
+        for item in items:
+            self._list_box.insert('end', item)
+
 
 class SearchBar(Component):
     """

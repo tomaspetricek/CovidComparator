@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from components import Navigation, Graph, Table, SearchBar, StateBar
+from components import Navigation, Graph, Table, SearchBar, StateBar, ListBox
 from utils import Callback
 from mixins import FlexibleMixin
 
@@ -68,14 +68,14 @@ class MainView(View):
 class VaccinationView(View):
     TITLE = "Vaccination Overview"
     N_COLUMNS = 3
-    N_ROWS = 3
+    N_ROWS = 4
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         self.state_bar = StateBar(self, controller.status)
         self.graph = Graph(self, controller.figure)
         self.search_bar = SearchBar(self, controller.selectable_countries, controller.add_country)
-        # self.deselect_box =
+        self.deselect_box = ListBox(self, controller.selected_countries, controller.remove_country)
         self.update_button = tk.Button(self, text="Update", command=self.controller.update_app)
         self.layout()
 
@@ -85,7 +85,8 @@ class VaccinationView(View):
         self.state_bar.grid(row=1, column=1)
         self.update_button.grid(row=1, column=2)
         self.search_bar.grid(row=2, column=0, padx=30)
-        self.graph.grid(row=2, column=1, columnspan=2)
+        self.deselect_box.grid(row=3, column=0, padx=30)
+        self.graph.grid(row=2, column=1, columnspan=2, rowspan=2)
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
 
