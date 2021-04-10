@@ -122,11 +122,12 @@ class Table(Component):
         self._free_row = 0
         self.header = data
         self.body = data
+        # self.make_flexible()
 
     def _add(self, cells, n_rows, n_cols):
         for row in range(n_rows):
             for col in range(n_cols):
-                if n_rows == 1:
+                if n_rows == 1 and type(cells) == list:
                     label = tk.Label(self, text=cells[col])
                 else:
                     label = tk.Label(self, text=cells[row][col])

@@ -173,6 +173,6 @@ if __name__ == '__main__':
     vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET, datetime.datetime(2020, 1, 1), "vaccinations")
     local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, datetime.datetime(2020, 1, 1), "czech stats")
     international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, datetime.datetime(2020, 1, 1), "international stats")
-    app = App(local_dataset, international_dataset, vaccination_dataset)
+    app = App(international_dataset, local_dataset, vaccination_dataset)
     app.run()
 

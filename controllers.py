@@ -41,7 +41,7 @@ class DatasetIntegrityController(Controller):
     def __init__(self, app):
         super().__init__(app)
         self.status = self.app.international_dataset, self.app.local_dataset
-        # self.overview = self.app.international_dataset, self.app.local_dataset
+        self.overview = self.app.international_dataset, self.app.local_dataset
         self.view = self.VIEW_CLASS(app.frame, self)
 
     def get_overview(self):
@@ -62,6 +62,8 @@ class DatasetIntegrityController(Controller):
         self._overview = pd.DataFrame(
             {'date posted': merged_dataset["date posted"], "diffrence daily increase of infected": diff_daily_infected,
              "diffrence total number of infected": diff_total_infected, "difference date posted": diff_date_posted})
+
+        self._overview.dropna(inplace=True)
 
     overview = property(get_overview, set_overview)
 

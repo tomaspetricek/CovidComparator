@@ -104,7 +104,7 @@ class DatasetIntegrityView(View):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         self.state_bar = StateBar(self, controller.status)
-        # self.table = Table(self, controller.overview)
+        self.table = Table(self, controller.overview)
         self.update_button = tk.Button(self, text="Update", command=self.controller.update_app)
         self.layout()
 
@@ -113,6 +113,7 @@ class DatasetIntegrityView(View):
         self.title.grid(row=1, column=0)
         self.state_bar.grid(row=1, column=1)
         self.update_button.grid(row=1, column=2)
+        self.table.grid(row=2, column=0, columnspan=self.N_COLUMNS)
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
 
