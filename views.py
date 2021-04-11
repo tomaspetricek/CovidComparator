@@ -118,12 +118,9 @@ class DatasetIntegrityView(View):
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
 
-    def _update_table(self, new_rows):
-        pass
-
     def update(self):
-        # self.state.update()
-        pass
+        self.state_bar.update(self.controller.status)
+        self.table.update(self.controller.overview)
 
 
 

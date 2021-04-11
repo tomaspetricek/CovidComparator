@@ -75,7 +75,7 @@ class DatasetIntegrityController(Controller):
     def set_status(self, value):
         datasets = value
 
-        self._status = dict()
+        self._status = {}
         for dataset in datasets:
             self._status[dataset.name] = dataset.last_updated
 
@@ -85,7 +85,7 @@ class DatasetIntegrityController(Controller):
     status = property(get_status, set_status)
 
     def update(self):
-        self._status = self.app.international_dataset, self.app.local_dataset
+        self.status = self.app.international_dataset, self.app.local_dataset
 
         # update overview based on new data
         self.overview = self.app.international_dataset, self.app.local_dataset
@@ -163,8 +163,8 @@ class VaccinationController(Controller):
 
     def set_status(self, value):
         dataset = value
-
-        self._status = {dataset.name: dataset.last_updated}
+        self._status = {}
+        self.status[dataset.name] = dataset.last_updated
 
     status = property(get_status, set_status)
 
@@ -173,7 +173,6 @@ class VaccinationController(Controller):
 
         # update overview based on new data
         self.overview = self.app.vaccination_dataset.data
-
         self.figure = self._overview
 
         # update graph

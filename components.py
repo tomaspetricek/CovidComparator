@@ -12,6 +12,16 @@ class Component(tk.Frame, FlexibleMixin):
     def layout(self):
         pass
 
+    def update(self, *args, **kwargs):
+        pass
+
+    def clear(self):
+        """
+        Removes all widgets from the frame.
+        """
+        for widget in self.winfo_children():
+            widget.destroy()
+
 class ListBox(Component):
     def __init__(self, parent, items, on_select):
         super().__init__(parent)
@@ -134,11 +144,11 @@ class Graph(Component):
         plt.close('all')
         self.canvas = figure
 
+    canvas = property(get_canvas, set_canvas)
+
     def update(self, figure):
         self._update_graph(figure)
         self.layout()
-
-    canvas = property(get_canvas, set_canvas)
 
 
 class Table(Component):
@@ -147,28 +157,39 @@ class Table(Component):
     """
     def __init__(self, parent, data):
         super().__init__(parent)
+        self.data = data
         self._free_row = 0
-        self.header = data
-        self.body = data
+        self.header = self.data
+        self.body = self.data
         # self.make_flexible()
 
-    def _add(self, cells, n_rows, n_cols):
+    def _add(self, values, n_rows, n_cols):
+        cells = list()
+        cell_row = None
+
         for row in range(n_rows):
             for col in range(n_cols):
-                if n_rows == 1 and type(cells) == list:
-                    label = tk.Label(self, text=cells[col])
+                cell_row = list()
+
+                if n_rows == 1 and type(values) == list:
+                    label = tk.Label(self, text=values[col])
                 else:
-                    label = tk.Label(self, text=cells[row][col])
+                    label = tk.Label(self, text=values[row][col])
+
                 label.grid(row=self._free_row + row, column=col)
+                cell_row.append(label)
+
+            cells.append(cell_row)
 
         self._free_row += n_rows
+        return cells
 
     def set_header(self, value):
         data = value
-        self._header = data.columns.values.tolist()
+        values = data.columns.values.tolist()
         n_rows = 1
-        n_cols = len(self._header)
-        self._add(self._header, n_rows, n_cols)
+        n_cols = len(values)
+        self._header = self._add(values, n_rows, n_cols)
 
     def get_header(self):
         return self._header
@@ -177,15 +198,20 @@ class Table(Component):
 
     def set_body(self, value):
         data = value
-        self._body = data.to_numpy()
-        n_rows, n_cols = self._body.shape
-        self._add(self._body, n_rows, n_cols)
+        values = data.to_numpy()
+        n_rows, n_cols = values.shape
+        self._body = self._add(values, n_rows, n_cols)
 
     def get_body(self):
         return self._body
 
     body = property(get_body, set_body)
 
+    def update(self, data):
+        self.clear()
+        self.data = data
+        self.header = self.data
+        self.body = self.data
 
 class Navigation(Component):
     """
