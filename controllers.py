@@ -138,7 +138,7 @@ class VaccinationController(Controller):
 
     def add_country(self, country):
         # add country to selected countries
-        if country in self.selectable_countries and len(self.selected_countries) <= self.MAX_COUNTRIES_SELECTED:
+        if country in self.selectable_countries and len(self.selected_countries) < self.MAX_COUNTRIES_SELECTED:
             self.selected_countries.append(country)
             self.selectable_countries.remove(country)
 
