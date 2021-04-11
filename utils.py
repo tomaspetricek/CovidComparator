@@ -1,4 +1,5 @@
 import requests
+import threading
 
 # TODO rename Logger to Notifier
 # TODO create Logger that logs into file -> logs errors that we wouldn't anticipate
@@ -38,4 +39,5 @@ class Callback:
         self.kwargs = kwargs
 
     def __call__(self):
-        self.fun(*self.args, **self.kwargs)
+        thread = threading.Thread(target=self.fun, args=self.args, kwargs=self.kwargs)
+        thread.start()

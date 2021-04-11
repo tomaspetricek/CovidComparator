@@ -3,6 +3,8 @@ import datetime
 import requests
 import io
 from pathlib import Path
+import threading
+
 
 def get_csv(url, encoding="utf-8"):
     with requests.Session() as s:
@@ -188,7 +190,12 @@ class Dataset:
         self.update()
 
     def save(self):
-        self.data.to_csv(self.csv_filename, index=False)
+        kwargs = {
+            "path_or_buf": self.csv_filename,
+            "index": False,
+        }
+        thread = threading.Thread(target=self.data.to_csv, kwargs=kwargs)
+        thread.start()
 
 class StatsDataset(Dataset):
     COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected", "date loaded"]
