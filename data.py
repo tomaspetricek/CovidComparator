@@ -2,7 +2,6 @@ import pandas as pd
 import datetime
 import requests
 import io
-import csv
 from pathlib import Path
 
 def get_csv(url, encoding="utf-8"):
