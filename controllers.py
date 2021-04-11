@@ -49,7 +49,8 @@ class DatasetIntegrityController(Controller):
 
     def set_overview(self, value):
         international_dataset, local_dataset = value
-        filtered_international_dataset = international_dataset.data.loc[international_dataset.data["country"] == "Czechia"]
+        filtered_international_dataset = international_dataset.data.loc[
+            international_dataset.data["country"] == "Czechia"]
         filtered_international_dataset = filtered_international_dataset.dropna(how='any', axis=0)
 
         merged_dataset = pd.merge_asof(filtered_international_dataset, local_dataset.data, on='date posted')
@@ -59,10 +60,14 @@ class DatasetIntegrityController(Controller):
             "total number of infected_y"]
         diff_date_posted = merged_dataset["date loaded_x"] - merged_dataset["date loaded_y"]
 
-        self._overview = pd.DataFrame(
-            {'date posted': merged_dataset["date posted"], "diffrence daily increase of infected": diff_daily_infected,
-             "diffrence total number of infected": diff_total_infected, "difference date posted": diff_date_posted})
+        data = {
+            "date posted": merged_dataset["date posted"],
+            "difference daily increase of infected": diff_daily_infected,
+            "difference total number of infected": diff_total_infected,
+            "difference time loaded": diff_date_posted
+        }
 
+        self._overview = pd.DataFrame(data)
         self._overview.dropna(inplace=True)
 
     overview = property(get_overview, set_overview)
@@ -123,7 +128,7 @@ class VaccinationController(Controller):
         plt.legend(loc='best')
         ax.set_xlabel("Date posted")
         ax.set_ylabel("Total vaccinations")
-        #ax.set_title("")
+        # ax.set_title("")
         self._figure.tight_layout()
 
     def get_figure(self):
@@ -174,6 +179,7 @@ class VaccinationController(Controller):
         # update graph
         self.view.update()
 
+
 if __name__ == "__main__":
     test_data2 = [
         [datetime.datetime(2020, 1, 1), "Czechia", 110],
@@ -186,5 +192,5 @@ if __name__ == "__main__":
 
     df2 = pd.DataFrame(test_data2, columns=["date posted", "country", "total vaccinations"])
     controller = VaccinationController(None)
-    #cr_data = MZCRFetcher().fetch(None)
-    #controller.set_data((cr_data, cr_data))
+    # cr_data = MZCRFetcher().fetch(None)
+    # controller.set_data((cr_data, cr_data))
