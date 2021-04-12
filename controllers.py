@@ -128,6 +128,7 @@ class VaccinationController(Controller):
         plt.legend(loc='best')
         ax.set_xlabel("Date posted")
         ax.set_ylabel("Total vaccinations")
+        ax.tick_params(axis='x', rotation=45)
         # ax.set_title("")
         self._figure.tight_layout()
 
