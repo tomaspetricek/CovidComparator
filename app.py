@@ -15,14 +15,16 @@ class Updater:
     Takes care of updating app.
     """
     UPDATE_FREQUENCY = 15 * 60  # waiting time
+    DATASET_LOCK = threading.Lock()
 
     def __init__(self, datasets, controllers):
         self.controllers = controllers
         self.datasets = datasets
 
     def _update_datasets(self):
-        for dataset in self.datasets:
-            dataset.update()
+        with self.DATASET_LOCK:
+            for dataset in self.datasets:
+                dataset.update()
 
     def _update_controllers(self):
         for controller in self.controllers:
