@@ -14,7 +14,7 @@ class Updater:
     """
     Takes care of updating app.
     """
-    UPDATE_FREQUENCY = 15 * 60  # waiting time
+    UPDATE_FREQUENCY = 30 # 15 * 60  # waiting time
     DATASET_LOCK = threading.Lock()
 
     def __init__(self, datasets, controllers):
@@ -123,9 +123,9 @@ class App(tk.Tk):
         self.local_dataset.load()
 
     def run(self):
-        #self.updater.run()
-        self.mainloop()
+        self.updater.run()
         self.viewer.show_view()
+        self.mainloop()
 
 class Viewer:
     """
