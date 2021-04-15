@@ -26,6 +26,16 @@ class Controller:
     def update_app(self):
         self.app.updater.update()
 
+    def formate_date(self, date, hours):
+        if hours:
+            return date.strftime("%H:%M %d-%m-%Y")
+        return date.strftime("%d-%m-%y")
+    def formate_delta_time(self, delta):
+        hours, remainder = divmod(abs(delta.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        print(round(seconds))
+        return "{:02d}:{:02d}:{:02d}".format(int(hours),int(minutes),int(round(seconds)))
+
 
 class MainController(Controller):
     VIEW_CLASS = MainView
@@ -54,17 +64,25 @@ class DatasetIntegrityController(Controller):
         filtered_international_dataset = filtered_international_dataset.dropna(how='any', axis=0)
 
         merged_dataset = pd.merge_asof(filtered_international_dataset, local_dataset.data, on='date posted')
+        merged_dataset = merged_dataset.dropna(how='any', axis=0)
+
         diff_daily_infected = merged_dataset["daily increase of infected_x"] - merged_dataset[
             "daily increase of infected_y"]
         diff_total_infected = merged_dataset["total number of infected_x"] - merged_dataset[
             "total number of infected_y"]
+        test1 = merged_dataset["date loaded_x"]
+        test2 = merged_dataset["date loaded_y"]
         diff_date_posted = merged_dataset["date loaded_x"] - merged_dataset["date loaded_y"]
+        diff_date_posted_formated = list()
+
+        for dat in diff_date_posted:
+            diff_date_posted_formated.append(self.formate_delta_time(dat))
 
         data = {
             "date posted": merged_dataset["date posted"],
             "difference daily increase of infected": diff_daily_infected,
             "difference total number of infected": diff_total_infected,
-            "difference time loaded": diff_date_posted
+            "difference time loaded": diff_date_posted_formated
         }
 
         self._overview = pd.DataFrame(data)
@@ -77,7 +95,7 @@ class DatasetIntegrityController(Controller):
 
         self._status = {}
         for dataset in datasets:
-            self._status[dataset.name] = dataset.last_updated
+            self._status[dataset.name] = self.formate_date(dataset.last_updated, True)
 
     def get_status(self):
         return self._status
@@ -120,7 +138,6 @@ class VaccinationController(Controller):
         self._figure, ax = plt.subplots(nrows=1, ncols=1)
 
         # pick only countries from selected_countries and Czechia always
-
         for country, group in self._overview.groupby(["country"]):
             if country in self.selected_countries or country == "Czechia":
                 ax.scatter(group["date posted"], group["total vaccinations"], label=country)
