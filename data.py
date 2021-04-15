@@ -188,6 +188,7 @@ class Dataset:
             self.data = pd.read_csv(self.csv_filename)
             self.data['date posted'] = pd.to_datetime(self.data['date posted'], format='%Y-%m-%d')
             self.date_from = min(self.data["date posted"])
+            self.data['date loaded'] = pd.to_datetime(self.data['date loaded'], format='%Y-%m-%d %H:%M:%S.%f')
         
         self.update()
 
