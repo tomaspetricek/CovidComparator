@@ -139,9 +139,12 @@ class VaccinationController(Controller):
         self._figure, ax = plt.subplots(nrows=1, ncols=1)
 
         # pick only countries from selected_countries and Czechia always
-        for country, group in self._overview.groupby(["country"]):
-            if country in self.selected_countries or country == "Czechia":
-                ax.scatter(group["date posted"], group["total vaccinations"], label=country)
+        try:
+            for country, group in self._overview.groupby(["country"]):
+                if country in self.selected_countries or country == "Czechia":
+                    ax.scatter(group["date posted"], group["total vaccinations"], label=country)
+        except (KeyError, AttributeError) as err:
+            self.app.logger.send_error("Nelze načíst správné data pro graf: " + str(err))
 
         plt.legend(loc='best')
         ax.set_xlabel("Date posted")

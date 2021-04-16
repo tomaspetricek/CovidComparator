@@ -73,12 +73,13 @@ class App(tk.Tk):
         DatasetIntegrityController,
     ]
 
-    def __init__(self, international_dataset, local_dataset, vaccination_dataset):
+    def __init__(self, international_dataset, local_dataset, vaccination_dataset, logger_url):
         super().__init__()
         self.international_dataset = international_dataset
         self.vaccination_dataset = vaccination_dataset
         self.local_dataset = local_dataset
         self.vaccination_dataset = vaccination_dataset
+        self.logger = Logger(logger_url)
         self.load()
         self.start_time = datetime.datetime.now()
         self.title(self.NAME)
@@ -178,7 +179,6 @@ class Viewer:
 
 
 if __name__ == '__main__':
-    # logger = Logger('http://covid.martinpolacek.eu/writeLog.php')
     # logger.send_info("Aplikace spuštěna na " + str(socket.gethostname()))
 
     fetcher = WHOVaccinationFetcher()
@@ -188,6 +188,7 @@ if __name__ == '__main__':
     vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET, datetime.datetime(2020, 1, 1), "vaccinations")
     local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, datetime.datetime(2020, 1, 1), "czech stats")
     international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, datetime.datetime(2020, 1, 1), "international stats")
-    app = App(international_dataset, local_dataset, vaccination_dataset)
+    logger_url = 'http://covid.martinpolacek.eu/writeLog.php'
+    app = App(international_dataset, local_dataset, vaccination_dataset, logger_url)
     app.run()
 
