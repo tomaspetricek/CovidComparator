@@ -28,8 +28,9 @@ class Controller:
 
     def formate_date(self, date, hours):
         if hours:
-            return date.strftime("%H:%M %d-%m-%Y")
+            return date.strftime("%d-%m-%Y %H:%M")
         return date.strftime("%d-%m-%y")
+
     def formate_delta_time(self, delta):
         hours, remainder = divmod(abs(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
@@ -182,7 +183,7 @@ class VaccinationController(Controller):
     def set_status(self, value):
         dataset = value
         self._status = {}
-        self.status[dataset.name] = dataset.last_updated
+        self.status[dataset.name] = self.formate_date(dataset.last_updated, True)
 
     status = property(get_status, set_status)
 

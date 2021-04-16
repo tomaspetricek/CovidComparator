@@ -36,7 +36,20 @@ class Updater:
 
     def _keep_running(self):
         self.update()
-        threading.Timer(self.UPDATE_FREQUENCY, self._keep_running)
+        if self._check_datasets_up_to_date():
+            threading.Timer(self.seconds_until_midnight(), self._keep_running)
+        else:
+            threading.Timer(self.UPDATE_FREQUENCY, self._keep_running)
+
+    def _check_datasets_up_to_date(self):
+        for dataset in self.datasets:
+            if not dataset.today_updated:
+                return False
+        return True
+
+    def seconds_until_midnight(self):
+        n = datetime.datetime.now()
+        return ((24 - n.hour - 1) * 60 * 60) + ((60 - n.minute - 1) * 60) + (60 - n.second)
 
     def run(self):
         """
