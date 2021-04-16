@@ -177,8 +177,21 @@ class Dataset:
     def _combine_data(self, data):
         data = data.set_index(["date posted", "country"])
         self.data = self.data.set_index(["date posted", "country"])
+        data_old = self.data.copy().reset_index()
 
         self.data = data.combine_first(self.data).reset_index()
+
+        #df.loc[df['A']  != 2, 'B'] = new_val
+        """
+        for index, row in df.iterrows():
+            date_posted = row[0]
+            country = row[1]
+            self.data.loc[date_posted, country][-1] = data_old.loc[date_posted, country][-1]
+            print(self.data.loc[date_posted, country][-1])
+            print(data_old.loc[date_posted, country][-1])
+        """
+        
+        self.data = data_old.combine_first(self.data)
 
     def update(self):
         data = self.fetcher.fetch(self.date_from)
@@ -231,42 +244,48 @@ class VaccinationDataset(Dataset):
 
 
 if __name__ == "__main__":
-    # MZCRStatsFetcher().fetch(None)
-    # MZCRVaccinationFetcher().fetch(None)
+    #MZCRStatsFetcher().fetch(None)
+    #MZCRVaccinationFetcher().fetch(None)
 
-    # WHOStatsFetcher().fetch(None)
-    # WHOVaccinationFetcher().fetch(None)
+    #WHOStatsFetcher().fetch(None)
+    #WHOVaccinationFetcher().fetch(None)
 
-    test_data = [[datetime.datetime(2020, 5, 17), "Czechia", 110], [datetime.datetime(2020, 5, 17), "Slovakia", 110],
-                 [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 110]]
-    df = pd.DataFrame(test_data, columns=VaccinationDataset.COLUMN_NAMES[:-2])
+    test_data = [[datetime.datetime(2020, 5, 17), "Czechia", 110, 1000, datetime.datetime(2020, 5, 17)], [datetime.datetime(2020, 5, 17), "Slovakia", 110, 1000, datetime.datetime(2020, 5, 17)],
+       [datetime.datetime(2020, 3, 3), "Poland", 110, 1000, datetime.datetime(2020, 5, 17)], [datetime.datetime(2020, 5, 18), "Slovakia", 110, 2000, datetime.datetime(2020, 5, 17)]]
+    df = pd.DataFrame(test_data, columns = VaccinationDataset.COLUMN_NAMES)
 
-    test_data2 = [[datetime.datetime(2020, 5, 17), "Czechia", 110], [datetime.datetime(2020, 5, 17), "Slovakia", 110],
-                  [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 130],
-                  [datetime.datetime(2020, 5, 19), "Slovakia", 130], [datetime.datetime(2020, 5, 20), "Slovakia", 140]]
-    df2 = pd.DataFrame(test_data2, columns=VaccinationDataset.COLUMN_NAMES[:-2])
+    test_data2 = [[datetime.datetime(2020, 5, 17), "Czechia", 110, 1000, datetime.datetime(2020, 6, 17)], [datetime.datetime(2020, 5, 17), "Slovakia", 110, 1000, datetime.datetime(2020, 6, 17)],
+       [datetime.datetime(2020, 3, 3), "Poland", 110, 1000, datetime.datetime(2020, 6, 17)], [datetime.datetime(2020, 5, 18), "Slovakia", 130, 2000, datetime.datetime(2020, 6, 17)],
+       [datetime.datetime(2020, 5, 19), "Slovakia", 130, 3000, datetime.datetime(2020, 6, 17)], [datetime.datetime(2020, 5, 20), "Slovakia", 140, 4000, datetime.datetime(2020, 6, 17)]]
+    df2 = pd.DataFrame(test_data2, columns = VaccinationDataset.COLUMN_NAMES)
 
-    # d = WHOVaccinationFetcher().fetch(datetime.datetime(2021,4,1))
-    # xprint(d)
+    #d = WHOVaccinationFetcher().fetch(datetime.datetime(2021,4,1))
+    #xprint(d)
 
-    vaccinationDataset = VaccinationDataset(None, None, datetime.datetime(2020, 4, 1), None)
+    vaccinationDataset = VaccinationDataset(None, None, datetime.datetime(2020,4,1), None)
     vaccinationDataset.data = df
     vaccinationDataset._combine_data(df2)
+    print(df)
+    print(df2)
     print(vaccinationDataset.data)
 
+    
+
+    """
     test_data = [[datetime.datetime(2020, 5, 17), "Czechia", 110], [datetime.datetime(2020, 5, 17), "Slovakia", 110],
-                 [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 110]]
-    df = pd.DataFrame(test_data, columns=StatsDataset.COLUMN_NAMES[:-2])
+       [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 110]]
+    df = pd.DataFrame(test_data, columns = StatsDataset.COLUMN_NAMES[:-2])
 
     test_data2 = [[datetime.datetime(2020, 5, 17), "Czechia", 110], [datetime.datetime(2020, 5, 17), "Slovakia", 110],
-                  [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 130],
-                  [datetime.datetime(2020, 5, 19), "Slovakia", 130], [datetime.datetime(2020, 5, 20), "Slovakia", 140]]
-    df2 = pd.DataFrame(test_data2, columns=StatsDataset.COLUMN_NAMES[:-2])
+       [datetime.datetime(2020, 3, 3), "Poland", 110], [datetime.datetime(2020, 5, 18), "Slovakia", 130],
+       [datetime.datetime(2020, 5, 19), "Slovakia", 130], [datetime.datetime(2020, 5, 20), "Slovakia", 140]]
+    df2 = pd.DataFrame(test_data2, columns = StatsDataset.COLUMN_NAMES[:-2])
 
-    # d = WHOVaccinationFetcher().fetch(datetime.datetime(2021,4,1))
-    # xprint(d)
+    #d = WHOVaccinationFetcher().fetch(datetime.datetime(2021,4,1))
+    #xprint(d)
 
-    statsDataset = StatsDataset(None, None, datetime.datetime(2020, 4, 1), None)
+    statsDataset = StatsDataset(None, None, datetime.datetime(2020,4,1), None)
     statsDataset.data = df
     statsDataset._combine_data(df2)
-    print(statsDataset.data)
+    #print(statsDataset.data)
+    """
