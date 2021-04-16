@@ -4,7 +4,7 @@ import requests
 import io
 from pathlib import Path
 import threading
-
+from pandas.util import hash_pandas_object
 
 def get_csv(url, encoding="utf-8"):
     with requests.Session() as s:
@@ -166,6 +166,8 @@ class Dataset:
         self.csv_filename = csv_filename
         self.date_from = date_from
         self.name = name
+        self.hash = None
+        self.today_updated = False
 
     def _combine_data(self, data):
         data = data.set_index(["date posted", "country"])
@@ -181,6 +183,7 @@ class Dataset:
 
         self.save()
         self.last_updated = datetime.datetime.now()
+        self.check_up_to_date()
 
     def load(self):
         if Path(self.csv_filename).is_file():
@@ -199,6 +202,15 @@ class Dataset:
         }
         thread = threading.Thread(target=self.data.to_csv, kwargs=kwargs)
         thread.start()
+
+    def check_up_to_date(self):
+        new_hash = hash_pandas_object(self.data).sum()
+
+        if new_hash != self.hash:
+            self.today_updated = True
+            self.hash = new_hash
+        else:
+            self.today_updated = False
 
 class StatsDataset(Dataset):
     COLUMN_NAMES = ["date posted", "country", "daily increase of infected", "total number of infected", "date loaded"]
