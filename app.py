@@ -48,8 +48,8 @@ class Updater:
         return True
 
     def seconds_until_midnight(self):
-        n = datetime.datetime.now()
-        return ((24 - n.hour - 1) * 60 * 60) + ((60 - n.minute - 1) * 60) + (60 - n.second)
+        now = datetime.datetime.now()
+        return ((24 - now.hour - 1) * 60 * 60) + ((60 - now.minute - 1) * 60) + (60 - now.second)
 
     def run(self):
         """
@@ -185,9 +185,11 @@ if __name__ == '__main__':
     mzcr_fetcher = MZCRStatsFetcher()
     who_fecther = WHOStatsFetcher()
 
-    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET, datetime.datetime(2020, 1, 1), "vaccinations")
-    local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, datetime.datetime(2020, 1, 1), "czech stats")
-    international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, datetime.datetime(2020, 1, 1), "international stats")
+    start_time = datetime.datetime.now() - datetime.timedelta(days=1)   # datetime.datetime(2020, 1, 1),
+
+    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET,  start_time, "vaccinations")
+    local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, start_time, "czech stats")
+    international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, start_time, "international stats")
     logger_url = 'http://covid.martinpolacek.eu/writeLog.php'
     app = App(international_dataset, local_dataset, vaccination_dataset, logger_url)
     app.run()

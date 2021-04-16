@@ -3,8 +3,8 @@
 ## TODO
 @Martin Poláček
 - uprava formátů časů pro zobrazení u stats a tabulky ✅
-- stats - last fetched datum a čas
-        - last updated datum a čas
+- stats - last fetched datum a čas ✅
+        - last updated datum a čas ✅
 - graf vaccination per population
 - když jsou všechny datasety updatované nastav další update od půlnoci dalšího dne ✅
 - zachytit chyby
