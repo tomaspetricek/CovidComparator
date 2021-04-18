@@ -31,8 +31,9 @@ class Updater:
             controller.update()
     
     def update(self):
-        self._update_datasets()
-        self._update_controllers()
+        if self.connected_to_internet():
+            self._update_datasets()
+            self._update_controllers()
 
     def _keep_running(self):
         self.update()
@@ -50,6 +51,13 @@ class Updater:
     def seconds_until_midnight(self):
         now = datetime.datetime.now()
         return ((24 - now.hour - 1) * 60 * 60) + ((60 - now.minute - 1) * 60) + (60 - now.second)
+
+    def connected_to_internet(self, url='http://www.google.com/', timeout=5):
+        try:
+            _ = requests.head(url, timeout=timeout)
+            return True
+        except requests.ConnectionError:
+            return False
 
     def run(self):
         """
@@ -140,6 +148,7 @@ class App(tk.Tk):
         self.updater.run()
         self.viewer.show_view()
         self.mainloop()
+
 
 class Viewer:
     """

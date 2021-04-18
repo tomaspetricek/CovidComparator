@@ -13,6 +13,7 @@ def get_csv(url, encoding="utf-8"):
         response = s.get(url)
 
     content = response.content.decode(encoding)
+
     return content
 
 
@@ -43,11 +44,14 @@ class DataFetcher:
         return data
 
 
+
+
 class WHOStatsFetcher(DataFetcher):
     URL = "https://covid19.who.int/WHO-COVID-19-global-data.csv"
 
     def fetch(self, from_date):
         # get data
+
         csv_url = self.URL
         content = get_csv(csv_url)
         data = pd.read_csv(io.StringIO(content))
@@ -221,8 +225,8 @@ class Dataset:
                 self.data['date posted'] = pd.to_datetime(self.data['date posted'], format='%Y-%m-%d')
                 self.date_from = min(self.data["date posted"])
                 self.data['date loaded'] = pd.to_datetime(self.data['date loaded'], format='%Y-%m-%d %H:%M:%S.%f')
-
-        self.update()
+        if self.connected_to_internet():
+            self.update()
 
     def save(self):
         kwargs = {
@@ -240,6 +244,13 @@ class Dataset:
             self.hash = new_hash
         else:
             self.today_updated = False
+
+    def connected_to_internet(self, url='http://www.google.com/', timeout=5):
+        try:
+            _ = requests.head(url, timeout=timeout)
+            return True
+        except requests.ConnectionError:
+            return False
 
 
 class StatsDataset(Dataset):

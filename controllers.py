@@ -27,6 +27,8 @@ class Controller:
         self.app.updater.update()
 
     def formate_date(self, date, hours):
+        if date is None:
+            return "Nelze se připojit k internetu"
         if hours:
             return date.strftime("%d-%m-%Y %H:%M")
         return date.strftime("%d-%m-%y")
