@@ -132,7 +132,7 @@ class VaccinationController(Controller):
 
     def set_overview(self, value):
         vaccination_dataset = value
-        self._overview = vaccination_dataset[["date posted", "country", "total vaccinations"]]
+        self._overview = vaccination_dataset[["date posted", "country", "total vaccinations per 100"]]
         self._overview = self._overview.fillna(0)
 
     overview = property(get_overview, set_overview)
@@ -144,13 +144,13 @@ class VaccinationController(Controller):
         try:
             for country, group in self._overview.groupby(["country"]):
                 if country in self.selected_countries or country == "Czechia":
-                    ax.scatter(group["date posted"], group["total vaccinations"], label=country)
+                    ax.scatter(group["date posted"], group["total vaccinations per 100"], label=country)
         except (KeyError, AttributeError) as err:
             self.app.logger.send_error("Nelze načíst správné data pro graf: " + str(err))
 
         plt.legend(loc='best')
         ax.set_xlabel("Date posted")
-        ax.set_ylabel("Total vaccinations")
+        ax.set_ylabel("Total vaccinations per 100")
         ax.tick_params(axis='x', rotation=45)
         # ax.set_title("")
         self._figure.tight_layout()
