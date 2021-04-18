@@ -64,7 +64,7 @@ class DatasetIntegrityController(Controller):
             international_dataset.data["country"] == "Czechia"]
         filtered_international_dataset = filtered_international_dataset.dropna(how='any', axis=0)
 
-        merged_dataset = pd.merge_asof(filtered_international_dataset, local_dataset.data, on='date posted')
+        merged_dataset = pd.merge(filtered_international_dataset, local_dataset.data, on='date posted')
         merged_dataset = merged_dataset.dropna(how='any', axis=0)
 
         diff_daily_infected = merged_dataset["daily increase of infected_x"] - merged_dataset[
