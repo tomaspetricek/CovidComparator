@@ -35,7 +35,7 @@ class Controller:
         hours, remainder = divmod(abs(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         print(round(seconds))
-        return "{:02d}:{:02d}:{:02d}".format(int(hours),int(minutes),int(round(seconds)))
+        return "{:02d}:{:02d}:{:02d}".format(int(hours), int(minutes), int(round(seconds)))
 
 
 class MainController(Controller):
