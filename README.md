@@ -8,7 +8,7 @@
 - graf vaccination per population
 - když jsou všechny datasety updatované nastav další update od půlnoci dalšího dne ✅
 - zachytit chyby
-    - odpojení od internetu
+    - odpojení od internetu ✅
     - příjde prázdný dataset na začátku - nebudeme moc vyplotit graf ✅
     - zapojit logger ✅
 - udělat z aplikace exe soubor ✅
