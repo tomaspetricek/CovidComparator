@@ -37,12 +37,12 @@ class Updater:
 
     def _keep_running(self):
         self.update()
-        time = self.UPDATE_FREQUENCY
+        time_ = self.UPDATE_FREQUENCY
 
         if self._check_datasets_up_to_date():
-            time = self.seconds_until_midnight()
+            time_ = self.seconds_until_midnight()
 
-        timer = threading.Timer(self.UPDATE_FREQUENCY, self._keep_running)
+        timer = threading.Timer(time_, self._keep_running)
         timer.start()
 
     def _check_datasets_up_to_date(self):
