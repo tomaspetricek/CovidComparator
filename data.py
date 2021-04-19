@@ -44,8 +44,6 @@ class DataFetcher:
         return data
 
 
-
-
 class WHOStatsFetcher(DataFetcher):
     URL = "https://covid19.who.int/WHO-COVID-19-global-data.csv"
 
@@ -209,6 +207,8 @@ class Dataset:
     def update(self):
         data = self.fetcher.fetch(self.date_from)
         # update whole data, because data can be changed after initial release
+
+        data.dropna(axis=0, how='any', inplace=True)
 
         self._combine_data(data)
 
