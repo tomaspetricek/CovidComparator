@@ -10,6 +10,9 @@ from data import *
 from config import *
 import requests
 
+START_TIME = datetime.datetime.today()
+START_TIME = START_TIME.replace(hour=0, minute=0, second=0, microsecond=0)
+
 
 class Updater:
     """
@@ -99,7 +102,7 @@ class App(tk.Tk):
         self.vaccination_dataset = vaccination_dataset
         self.logger = Logger(logger_url)
         self.load()
-        self.start_time = datetime.datetime.now()
+        self.start_time = START_TIME
         self.title(self.NAME)
         self.frame = None
         self.view_classes = self.CONTROLLER_CLASSES
@@ -209,11 +212,9 @@ if __name__ == '__main__':
     mzcr_fetcher = MZCRStatsFetcher()
     who_fecther = WHOStatsFetcher()
 
-    start_time = datetime.datetime.now()  # - datetime.timedelta(days=1)
-
-    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET,  start_time, "vaccinations")
-    local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, start_time, "czech stats")
-    international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, start_time, "international stats")
+    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET,  START_TIME, "vaccinations")
+    local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, START_TIME, "czech stats")
+    international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, START_TIME, "international stats")
     logger_url = 'http://covid.martinpolacek.eu/writeLog.php'
     app = App(international_dataset, local_dataset, vaccination_dataset, logger_url)
     app.run()
