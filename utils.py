@@ -22,9 +22,11 @@ class Logger:
 
     def _send(self, type_, message):
         params = {"type": type_, "text": message}
+        try:
+            requests.post(self.URL, params)
+        except:
+            pass
 
-        requests.post(self.URL, params)
-        pass
 
 class Callback:
     """
