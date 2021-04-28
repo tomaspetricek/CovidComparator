@@ -48,7 +48,6 @@ class Updater:
     def _check_datasets_up_to_date(self):
         for dataset in self.datasets:
             if not dataset.today_updated:
-                print(dataset.today_updated)
                 return False
         return True
 
@@ -198,7 +197,7 @@ if __name__ == '__main__':
     mzcr_fetcher = MZCRStatsFetcher()
     who_fecther = WHOStatsFetcher()
 
-    start_time = datetime.datetime.now() - datetime.timedelta(days=1)   # datetime.datetime(2020, 1, 1),
+    start_time = datetime.datetime.now() - datetime.timedelta(days=1)
 
     vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET,  start_time, "vaccinations")
     local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, start_time, "czech stats")

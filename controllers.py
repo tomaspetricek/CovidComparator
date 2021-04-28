@@ -1,7 +1,6 @@
 from views import *
 from data import *
 import matplotlib.pyplot as plt
-import numpy as np
 
 
 class Controller:
@@ -201,18 +200,3 @@ class VaccinationController(Controller):
         # update graph
         self.view.update()
 
-
-if __name__ == "__main__":
-    test_data2 = [
-        [datetime.datetime(2020, 1, 1), "Czechia", 110],
-        [datetime.datetime(2020, 1, 2), "Slovakia", 110],
-        [datetime.datetime(2020, 1, 2), "Poland", 110],
-        [datetime.datetime(2020, 5, 18), "Slovakia", 130],
-        [datetime.datetime(2020, 5, 19), "Slovakia", 130],
-        [datetime.datetime(2020, 5, 20), "Slovakia", 140]
-    ]
-
-    df2 = pd.DataFrame(test_data2, columns=["date posted", "country", "total vaccinations"])
-    controller = VaccinationController(None)
-    # cr_data = MZCRFetcher().fetch(None)
-    # controller.set_data((cr_data, cr_data))

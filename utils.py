@@ -1,8 +1,6 @@
 import requests
 import threading
 
-# TODO rename Logger to Notifier
-# TODO create Logger that logs into file -> logs errors that we wouldn't anticipate
 
 class Logger:
 
