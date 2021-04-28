@@ -26,17 +26,16 @@ class Controller:
     def update_app(self):
         self.app.updater.update()
 
-    def formate_date(self, date, hours):
+    def format_date(self, date, hours):
         if date is None:
             return "Nelze se připojit k internetu"
         if hours:
             return date.strftime("%d-%m-%Y %H:%M")
         return date.strftime("%d-%m-%y")
 
-    def formate_delta_time(self, delta):
+    def format_delta_time(self, delta):
         hours, remainder = divmod(abs(delta.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
-        print(round(seconds))
         return "{:02d}:{:02d}:{:02d}".format(int(hours), int(minutes), int(round(seconds)))
 
 
@@ -79,7 +78,7 @@ class DatasetIntegrityController(Controller):
         diff_date_posted_formated = list()
 
         for dat in diff_date_posted:
-            diff_date_posted_formated.append(self.formate_delta_time(dat))
+            diff_date_posted_formated.append(self.format_delta_time(dat))
 
         data = {
             "date posted": merged_dataset["date posted"],
@@ -98,7 +97,7 @@ class DatasetIntegrityController(Controller):
 
         self._status = {}
         for dataset in datasets:
-            self._status[dataset.name] = self.formate_date(dataset.last_updated, True)
+            self._status[dataset.name] = self.format_date(dataset.last_updated, True)
 
     def get_status(self):
         return self._status
@@ -188,7 +187,7 @@ class VaccinationController(Controller):
     def set_status(self, value):
         dataset = value
         self._status = {}
-        self.status[dataset.name] = self.formate_date(dataset.last_updated, True)
+        self.status[dataset.name] = self.format_date(dataset.last_updated, True)
 
     status = property(get_status, set_status)
 

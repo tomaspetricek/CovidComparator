@@ -91,9 +91,6 @@ class MZCRStatsFetcher(DataFetcher):
         # change columns dtypes based on Dataset.COLUMN_DTYPES
         data['date posted'] = pd.to_datetime(data['date posted'], format='%Y-%m-%d')
 
-        # print(data.iloc[0])
-        # print(data.columns)
-        # print(data.dtypes)
 
         # remove data before from_date
 
