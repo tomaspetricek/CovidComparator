@@ -159,7 +159,8 @@ class Dataset:
 
         self.data = data.combine_first(self.data)
 
-        self._retain_first_loaded(old_data)
+        if not old_data.empty:
+            self._retain_first_loaded(old_data)
 
         self.data.reset_index(inplace=True)
 
