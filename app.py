@@ -15,7 +15,7 @@ class Updater:
     """
     Takes care of updating app.
     """
-    UPDATE_FREQUENCY = 15 * 60 # 15 * 60  # waiting time
+    UPDATE_FREQUENCY = 15 * 60   # 15 * 60  # waiting time
     DATASET_LOCK = threading.Lock()
 
     def __init__(self, datasets, controllers):
@@ -43,8 +43,8 @@ class Updater:
         if self._check_datasets_up_to_date():
             time_ = self.seconds_until_midnight()
 
-        timer = threading.Timer(time_, self._keep_running)
-        timer.start()
+        self.timer = threading.Timer(time_, self._keep_running)
+        self.timer.start()
 
     def _check_datasets_up_to_date(self):
         for dataset in self.datasets:
@@ -68,6 +68,12 @@ class Updater:
         Runs periodic updates based on UPDATE_FREQUENCY.
         """
         self._keep_running()
+
+    def stop(self):
+        if self.DATASET_LOCK.locked():
+            self.DATASET_LOCK.release()
+
+        self.timer.cancel()
 
 
 class App(tk.Tk):
@@ -102,6 +108,11 @@ class App(tk.Tk):
         self.minsize(width=self.MIN_WIDTH, height=self.MIN_HEIGHT)
         self.updater = Updater([self.international_dataset, self.vaccination_dataset, self.local_dataset],
                                self.controllers)
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    def on_close(self):
+        self.updater.stop()
+        self.destroy()
 
     def set_frame(self, value):
         self._frame = tk.Frame()
@@ -198,7 +209,7 @@ if __name__ == '__main__':
     mzcr_fetcher = MZCRStatsFetcher()
     who_fecther = WHOStatsFetcher()
 
-    start_time = datetime.datetime.now() - datetime.timedelta(days=1)
+    start_time = datetime.datetime.now()  # - datetime.timedelta(days=1)
 
     vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET,  start_time, "vaccinations")
     local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, start_time, "czech stats")
