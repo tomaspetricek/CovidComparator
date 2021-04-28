@@ -8,6 +8,7 @@ import datetime
 import time
 from data import *
 from config import *
+import requests
 
 
 class Updater:
