@@ -122,6 +122,7 @@ class VaccinationController(Controller):
         self.selectable_countries = list(self.app.vaccination_dataset.data["country"].unique())
         self.selected_countries = []
         self.status = self.app.vaccination_dataset
+        self._figure = None
         self.figure = self._overview
         self.view = self.VIEW_CLASS(app.frame, self)
 
@@ -136,20 +137,23 @@ class VaccinationController(Controller):
     overview = property(get_overview, set_overview)
 
     def set_figure(self, value):
-        self._figure, ax = plt.subplots(nrows=1, ncols=1)
+        if not self._figure:
+            self._figure, self._ax = plt.subplots(nrows=1, ncols=1)
+
+        self._ax.clear()
 
         # pick only countries from selected_countries and Czechia always
         try:
             for country, group in self._overview.groupby(["country"]):
                 if country in self.selected_countries or country == "Czechia":
-                    ax.scatter(group["date posted"], group["total vaccinations per 100"], label=country)
+                    self._ax.scatter(group["date posted"], group["total vaccinations per 100"], label=country)
         except (KeyError, AttributeError) as err:
             self.app.logger.send_error("Nelze načíst správné data pro graf: " + str(err))
 
         plt.legend(loc='best')
-        ax.set_xlabel("Date posted")
-        ax.set_ylabel("Total vaccinations per 100")
-        ax.tick_params(axis='x', rotation=45)
+        self._ax.set_xlabel("Date posted")
+        self._ax.set_ylabel("Total vaccinations per 100")
+        self._ax.tick_params(axis='x', rotation=45)
         # ax.set_title("")
         self._figure.tight_layout()
 

@@ -93,7 +93,7 @@ class VaccinationView(View):
     def update(self):
         self.state_bar.update(self.controller.status)
         self.search_bar.update(self.controller.selectable_countries)
-        self.graph.update(self.controller.figure)
+        self.graph.update()
         self.deselect_box.update(self.controller.selected_countries)
 
 

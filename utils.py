@@ -39,5 +39,6 @@ class Callback:
         self.kwargs = kwargs
 
     def __call__(self):
-        thread = threading.Thread(target=self.fun, args=self.args, kwargs=self.kwargs)
-        thread.start()
+        # thread = threading.Thread(target=self.fun, args=self.args, kwargs=self.kwargs)
+        self.fun(*self.args, **self.kwargs)
+        # thread.start()

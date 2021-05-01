@@ -129,26 +129,21 @@ class Graph(Component):
         self.make_flexible(n_rows=1, n_cols=1)
 
     def layout(self):
-        self._canvas.grid(row=0, column=0)
+        self._canvas_widget.grid(row=0, column=0)
 
     def set_canvas(self, value):
         figure = value
         canvas = FigureCanvasTkAgg(figure, self)
-        self._canvas = canvas.get_tk_widget()
+        self._canvas_widget = canvas.get_tk_widget()
+        self._canvas = canvas
 
     def get_canvas(self):
         return self._canvas
 
-    def _update_graph(self, figure):
-        self.canvas.destroy()
-        plt.close('all')
-        self.canvas = figure
-
     canvas = property(get_canvas, set_canvas)
 
-    def update(self, figure):
-        self._update_graph(figure)
-        self.layout()
+    def update(self):
+        self._canvas.draw()
 
 
 class Table(Component):
