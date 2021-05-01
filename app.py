@@ -9,6 +9,7 @@ import time
 from data import *
 from config import *
 import requests
+import queue
 
 START_TIME = datetime.datetime.today()
 START_TIME = START_TIME.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -21,7 +22,8 @@ class Updater:
     UPDATE_FREQUENCY = 15 * 60   # 15 * 60  # waiting time
     DATASET_LOCK = threading.Lock()
 
-    def __init__(self, datasets, controllers):
+    def __init__(self, app, datasets, controllers):
+        self.app = app
         self.controllers = controllers
         self.datasets = datasets
 
@@ -40,7 +42,8 @@ class Updater:
             self._update_controllers()
 
     def _keep_running(self):
-        self.update()
+        # put into callback_queue so it can be called from the main thread
+        self.app.callback_queue.put(self.update)
         time_ = self.UPDATE_FREQUENCY
 
         if self._check_datasets_up_to_date():
@@ -109,9 +112,10 @@ class App(tk.Tk):
         self.controllers = self.CONTROLLER_CLASSES
         self.viewer = Viewer(self.controllers, MainController.VIEW_CLASS)
         self.minsize(width=self.MIN_WIDTH, height=self.MIN_HEIGHT)
-        self.updater = Updater([self.international_dataset, self.vaccination_dataset, self.local_dataset],
+        self.updater = Updater(self, [self.international_dataset, self.vaccination_dataset, self.local_dataset],
                                self.controllers)
         self.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.callback_queue = queue.Queue()
 
     def on_close(self):
         self.updater.stop()
@@ -162,9 +166,18 @@ class App(tk.Tk):
         self.international_dataset.load()
         self.local_dataset.load()
 
+    def _keep_checking_for_callbacks(self):
+        while True:
+            try:
+                callback = self.callback_queue.get(False)  # doesn't block
+            except queue.Empty:  # raised when queue is empty
+                break
+            callback()
+
     def run(self):
         self.updater.run()
         self.viewer.show_view()
+        self._keep_checking_for_callbacks()
         self.mainloop()
 
 
@@ -204,18 +217,23 @@ class Viewer:
     def update(self):
         pass
 
-
-if __name__ == '__main__':
+def main():
     # logger.send_info("Aplikace spuštěna na " + str(socket.gethostname()))
 
     fetcher = WHOVaccinationFetcher()
     mzcr_fetcher = MZCRStatsFetcher()
     who_fecther = WHOStatsFetcher()
 
-    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET,  START_TIME, "vaccinations")
+    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET, START_TIME, "vaccinations")
     local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, START_TIME, "czech stats")
     international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, START_TIME, "international stats")
     logger_url = 'http://covid.martinpolacek.eu/writeLog.php'
     app = App(international_dataset, local_dataset, vaccination_dataset, logger_url)
     app.run()
+
+
+if __name__ == '__main__':
+    main()
+
+
 
