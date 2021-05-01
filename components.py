@@ -202,8 +202,12 @@ class Table(Component):
 
     body = property(get_body, set_body)
 
+    def _clear(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+
     def update(self, data):
-        self.clear()
+        self._clear()
         self.data = data
         self.header = self.data
         self.body = self.data
