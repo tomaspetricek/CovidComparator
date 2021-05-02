@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['C:\\xampp\\htdocs\\STI\\CovidComparator'],
+             pathex=['C:\\xampp\\htdocs\\STI\\Covid\\CovidComparator'],
              binaries=[],
              datas=[],
              hiddenimports=[],

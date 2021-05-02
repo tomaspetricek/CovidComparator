@@ -19,7 +19,7 @@ class Updater:
     """
     Takes care of updating app.
     """
-    UPDATE_FREQUENCY = 15 * 60   # 15 * 60  # waiting time
+    UPDATE_FREQUENCY = 15 * 60 # waiting time
     DATASET_LOCK = threading.Lock()
 
     def __init__(self, app, datasets, controllers):
@@ -35,11 +35,11 @@ class Updater:
     def _update_controllers(self):
         for controller in self.controllers:
             controller.update()
-    
+
     def update(self):
         if self.connected_to_internet():
             self._update_datasets()
-            self._update_controllers()
+            self.app.callback_queue.put(self._update_controllers)
 
     def _keep_running(self):
         # put into callback_queue so it can be called from the main thread
@@ -148,7 +148,7 @@ class App(tk.Tk):
     def set_controllers(self, value):
         controller_classes = value
         self._controllers = []
-        
+
         for controller_class in controller_classes:
             controller = controller_class(self)
             self._controllers.append(controller)
@@ -167,17 +167,21 @@ class App(tk.Tk):
         self.local_dataset.load()
 
     def _keep_checking_for_callbacks(self):
-        while True:
-            try:
-                callback = self.callback_queue.get(False)  # doesn't block
-            except queue.Empty:  # raised when queue is empty
-                break
-            callback()
+        try:
+            callback = self.callback_queue.get(False)  # doesn't block
+        except queue.Empty:  # raised when queue is empty
+            pass
+        else:
+            if callback:
+                callback()
+
+        self.after(10000, self._keep_checking_for_callbacks)  # Every 10 sec
 
     def run(self):
         self.updater.run()
         self.viewer.show_view()
         self._keep_checking_for_callbacks()
+        self.after(1, self._keep_checking_for_callbacks)
         self.mainloop()
 
 
@@ -217,6 +221,7 @@ class Viewer:
     def update(self):
         pass
 
+
 def main():
     # logger.send_info("Aplikace spuštěna na " + str(socket.gethostname()))
 
@@ -234,6 +239,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
