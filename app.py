@@ -2,7 +2,7 @@ import threading
 import tkinter as tk
 from tkinter import ttk
 from controllers import MainController, VaccinationController, DatasetIntegrityController
-from utils import Logger
+from utils import Logger, connected_to_internet
 import socket
 import datetime
 import time
@@ -37,7 +37,7 @@ class Updater:
             controller.update()
 
     def update(self):
-        if self.connected_to_internet():
+        if connected_to_internet():
             self._update_datasets()
         self.app.callback_queue.put(self._update_controllers)
 
@@ -64,13 +64,6 @@ class Updater:
     def seconds_until_midnight(self):
         now = datetime.datetime.now()
         return ((24 - now.hour - 1) * 60 * 60) + ((60 - now.minute - 1) * 60) + (60 - now.second)
-
-    def connected_to_internet(self, url='http://www.google.com/', timeout=5):
-        try:
-            _ = requests.head(url, timeout=timeout)
-            return True
-        except requests.ConnectionError:
-            return False
 
     def run(self):
         """
@@ -232,9 +225,9 @@ def main():
     mzcr_fetcher = MZCRStatsFetcher()
     who_fecther = WHOStatsFetcher()
 
-    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET, START_TIME, "vaccinations")
-    local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, START_TIME, "czech stats")
-    international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, START_TIME, "international stats")
+    vaccination_dataset = VaccinationDataset(fetcher, VACCINATION_DATASET, START_TIME, "WHO vaccinations")
+    local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, START_TIME, "MZČR stats")
+    international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, START_TIME, "WHO stats")
     logger_url = 'http://covid.martinpolacek.eu/writeLog.php'
     app = App(international_dataset, local_dataset, vaccination_dataset, logger_url)
     app.run()

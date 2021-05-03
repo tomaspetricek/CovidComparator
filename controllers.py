@@ -1,6 +1,7 @@
 from views import *
 from data import *
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 class Controller:
@@ -60,6 +61,7 @@ class DatasetIntegrityController(Controller):
 
     def set_overview(self, value):
         international_dataset, local_dataset = value
+
         filtered_international_dataset = international_dataset.data.loc[
             international_dataset.data["country"] == "Czechia"]
         filtered_international_dataset = filtered_international_dataset.dropna(how='any', axis=0)
@@ -71,11 +73,13 @@ class DatasetIntegrityController(Controller):
             "daily increase of infected_y"]
         diff_total_infected = merged_dataset["total number of infected_x"] - merged_dataset[
             "total number of infected_y"]
-        diff_date_posted = merged_dataset["date loaded_x"] - merged_dataset["date loaded_y"]
-        diff_date_posted_formated = list()
 
-        for dat in diff_date_posted:
-            diff_date_posted_formated.append(self.format_delta_time(dat))
+        if merged_dataset.empty:
+            diff_date_posted = pd.to_datetime(merged_dataset["date loaded_x"]) - pd.to_datetime(merged_dataset["date loaded_y"])
+            diff_date_posted_formated = list()
+
+            for dat in diff_date_posted:
+                diff_date_posted_formated.append(self.format_delta_time(dat))
 
         data = {
             "date posted": merged_dataset["date posted"],

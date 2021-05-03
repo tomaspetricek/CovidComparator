@@ -57,11 +57,17 @@ class MainView(View):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
+
+        help_text = "WHO vaccination stats are updated one or two times per week for some countries only. \n" \
+                    "WHO stats are updated each day during evening. \n" \
+                    "MZČR stats are updated each day during morning."
+        self.help = tk.Label(self, text=help_text, justify="center")
         self.layout()
 
     def layout(self):
         self.navigation.grid(row=0, column=0, columnspan=self.N_COLUMNS, sticky="we")
-        self.title.grid(row=1, column=0)
+        self.title.grid(row=1, column=0, columnspan=self.N_COLUMNS, sticky="we")
+        self.help.grid(row=2, column=0, columnspan=self.N_COLUMNS, sticky="we")
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
 

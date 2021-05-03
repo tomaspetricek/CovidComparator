@@ -5,6 +5,7 @@ import io
 from pathlib import Path
 import threading
 from pandas.util import hash_pandas_object
+from utils import connected_to_internet
 
 
 def get_csv(url, encoding="utf-8"):
@@ -168,16 +169,17 @@ class Dataset:
         self.data.reset_index(inplace=True)
 
     def update(self):
-        data = self.fetcher.fetch(self.date_from)
-        # update whole data, because data can be changed after initial release
+        if connected_to_internet():
+            data = self.fetcher.fetch(self.date_from)
+            # update whole data, because data can be changed after initial release
 
-        data.dropna(axis=0, how='any', inplace=True)
+            data.dropna(axis=0, how='any', inplace=True)
 
-        self._combine_data(data)
+            self._combine_data(data)
 
-        self.save()
-        self.last_fetched = datetime.datetime.now()
-        self.check_up_to_date()
+            self.save()
+            self.last_fetched = datetime.datetime.now()
+            self.check_up_to_date()
 
     def load(self):
         if Path(self.csv_filename).is_file():
@@ -189,8 +191,7 @@ class Dataset:
                 self.date_from = min(self.data["date posted"])
                 self.data['date loaded'] = pd.to_datetime(self.data['date loaded'], format='%Y-%m-%d %H:%M:%S.%f')
 
-        if self.connected_to_internet():
-            self.update()
+        self.update()
 
     def save(self):
         kwargs = {
@@ -213,13 +214,6 @@ class Dataset:
                 self.last_updated = None
         else:
             self.today_updated = False
-
-    def connected_to_internet(self, url='http://www.google.com/', timeout=5):
-        try:
-            _ = requests.head(url, timeout=timeout)
-            return True
-        except requests.ConnectionError:
-            return False
 
 
 class StatsDataset(Dataset):

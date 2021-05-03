@@ -42,3 +42,10 @@ class Callback:
         thread = threading.Thread(target=self.fun, args=self.args, kwargs=self.kwargs)
         #self.fun(*self.args, **self.kwargs)
         thread.start()
+
+def connected_to_internet(url='http://www.google.com/', timeout=5):
+    try:
+        _ = requests.head(url, timeout=timeout)
+        return True
+    except requests.ConnectionError:
+        return False
