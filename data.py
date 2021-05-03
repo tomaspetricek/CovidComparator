@@ -53,7 +53,9 @@ class WHOStatsFetcher(DataFetcher):
 
         # rename columns based on Dataset.COLUMNS
         n_rows = data.shape[0]
-        data.insert(4, "date loaded", pd.Series(n_rows * [datetime.datetime.now()]))
+        data.reset_index(inplace=True, drop=True)
+        date_loaded = pd.Series(n_rows * [datetime.datetime.now()])
+        data.insert(4, "date loaded", date_loaded)
         data.columns = StatsDataset.COLUMN_NAMES
 
         # change columns dtypes based on Dataset.COLUMN_DTYPES
