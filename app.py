@@ -19,7 +19,7 @@ class Updater:
     """
     Takes care of updating app.
     """
-    UPDATE_FREQUENCY = 15 * 60 # waiting time
+    UPDATE_FREQUENCY = 15 * 60  # waiting time
     DATASET_LOCK = threading.Lock()
 
     def __init__(self, app, datasets, controllers):
@@ -46,7 +46,10 @@ class Updater:
         self.app.callback_queue.put(self.update)
         time_ = self.UPDATE_FREQUENCY
 
-        if self._check_datasets_up_to_date():
+        today = datetime.datetime.today()
+        today = today.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        if self._check_datasets_up_to_date() and START_TIME != today:
             time_ = self.seconds_until_midnight()
 
         self.timer = threading.Timer(time_, self._keep_running)
