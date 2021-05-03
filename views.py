@@ -19,7 +19,7 @@ class View(tk.Frame, FlexibleMixin):
         self.controller = controller
         self.navigation = controller.app.view_classes
 
-        self.title = tk.Label(self, text=self.TITLE)
+        self.title = tk.Label(self, text=self.TITLE, font="Courier 15 bold")
 
     def layout(self):
         pass
@@ -76,7 +76,7 @@ class VaccinationView(View):
         self.graph = Graph(self, controller.figure)
         self.search_bar = SearchBar(self, controller.selectable_countries, controller.add_country)
         self.deselect_box = ListBox(self, controller.selected_countries, controller.remove_country)
-        self.update_button = tk.Button(self, text="Update", command=Callback(self.controller.update_app))
+        self.update_button = tk.Button(self, text="Check for update", command=Callback(self.controller.update_app))
         self.layout()
 
     def layout(self):
@@ -106,7 +106,7 @@ class DatasetIntegrityView(View):
         super().__init__(parent, controller)
         self.state_bar = StateBar(self, controller.status)
         self.table = Table(self, controller.overview)
-        self.update_button = tk.Button(self, text="Update", command=Callback(self.controller.update_app))
+        self.update_button = tk.Button(self, text="Check for update", command=Callback(self.controller.update_app))
         self.layout()
 
     def layout(self):
@@ -114,7 +114,7 @@ class DatasetIntegrityView(View):
         self.title.grid(row=1, column=0)
         self.state_bar.grid(row=1, column=1)
         self.update_button.grid(row=1, column=2)
-        self.table.grid(row=2, column=0, columnspan=self.N_COLUMNS)
+        self.table.grid(row=2, column=0, columnspan=self.N_COLUMNS, pady=(25, ))
         self.make_flexible(n_rows=self.N_ROWS, n_cols=self.N_COLUMNS)
         self.grid(row=0, column=0, sticky="nsew")
 

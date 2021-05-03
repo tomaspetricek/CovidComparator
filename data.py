@@ -128,6 +128,7 @@ class Dataset:
         """
         self.fetcher = fetcher
         self.data = pd.DataFrame(columns=self.COLUMN_NAMES)
+        self.last_fetched = None
         self.last_updated = None
         self.csv_filename = csv_filename
         self.date_from = date_from
@@ -173,7 +174,7 @@ class Dataset:
         self._combine_data(data)
 
         self.save()
-        self.last_updated = datetime.datetime.now()
+        self.last_fetched = datetime.datetime.now()
         self.check_up_to_date()
 
     def load(self):
@@ -203,6 +204,8 @@ class Dataset:
         if new_hash != self.hash:
             self.today_updated = True
             self.hash = new_hash
+            self.last_updated = datetime.datetime.now()
+            print(self.last_updated)
         else:
             self.today_updated = False
 

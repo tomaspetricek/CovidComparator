@@ -11,7 +11,7 @@ from config import *
 import requests
 import queue
 
-START_TIME = datetime.datetime.today()
+START_TIME = datetime.datetime(2021, 4, 1)
 START_TIME = START_TIME.replace(hour=0, minute=0, second=0, microsecond=0)
 
 
@@ -19,7 +19,7 @@ class Updater:
     """
     Takes care of updating app.
     """
-    UPDATE_FREQUENCY = 15 * 60  # waiting time
+    UPDATE_FREQUENCY = 15 * 60 # waiting time
     DATASET_LOCK = threading.Lock()
 
     def __init__(self, app, datasets, controllers):
@@ -39,7 +39,7 @@ class Updater:
     def update(self):
         if self.connected_to_internet():
             self._update_datasets()
-            self.app.callback_queue.put(self._update_controllers)
+        self.app.callback_queue.put(self._update_controllers)
 
     def _keep_running(self):
         # put into callback_queue so it can be called from the main thread

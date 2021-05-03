@@ -71,8 +71,6 @@ class DatasetIntegrityController(Controller):
             "daily increase of infected_y"]
         diff_total_infected = merged_dataset["total number of infected_x"] - merged_dataset[
             "total number of infected_y"]
-        test1 = merged_dataset["date loaded_x"]
-        test2 = merged_dataset["date loaded_y"]
         diff_date_posted = merged_dataset["date loaded_x"] - merged_dataset["date loaded_y"]
         diff_date_posted_formated = list()
 
@@ -95,8 +93,12 @@ class DatasetIntegrityController(Controller):
         datasets = value
 
         self._status = {}
+
+        dataset_key = " last updated:"
+
         for dataset in datasets:
-            self._status[dataset.name] = self.format_date(dataset.last_updated, True)
+            self._status[dataset.name.capitalize() + dataset_key] = self.format_date(dataset.last_updated, True)
+        self._status["Last update attempt:"] = self.format_date(dataset.last_fetched, True)
 
     def get_status(self):
         return self._status
@@ -190,7 +192,7 @@ class VaccinationController(Controller):
     def set_status(self, value):
         dataset = value
         self._status = {}
-        self.status[dataset.name] = self.format_date(dataset.last_updated, True)
+        self.status[dataset.name] = self.format_date(dataset.last_fetched, True)
 
     status = property(get_status, set_status)
 

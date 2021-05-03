@@ -167,10 +167,11 @@ class Table(Component):
                 cell_row = list()
 
                 if n_rows == 1 and type(values) == list:
-                    label = tk.Label(self, text=values[col])
+                    text = values[col]
                 else:
-                    label = tk.Label(self, text=values[row][col])
+                    text = values[row][col]
 
+                label = tk.Label(self, text=text, borderwidth=2, relief="groove")
                 label.grid(row=self._free_row + row, column=col)
                 cell_row.append(label)
 
