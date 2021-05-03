@@ -74,12 +74,11 @@ class DatasetIntegrityController(Controller):
         diff_total_infected = merged_dataset["total number of infected_x"] - merged_dataset[
             "total number of infected_y"]
 
-        if merged_dataset.empty:
-            diff_date_posted = pd.to_datetime(merged_dataset["date loaded_x"]) - pd.to_datetime(merged_dataset["date loaded_y"])
-            diff_date_posted_formated = list()
+        diff_date_posted = pd.to_datetime(merged_dataset["date loaded_x"]) - pd.to_datetime(merged_dataset["date loaded_y"])
+        diff_date_posted_formated = list()
 
-            for dat in diff_date_posted:
-                diff_date_posted_formated.append(self.format_delta_time(dat))
+        for dat in diff_date_posted:
+            diff_date_posted_formated.append(self.format_delta_time(dat))
 
         data = {
             "date posted": merged_dataset["date posted"],

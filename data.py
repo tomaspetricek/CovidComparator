@@ -208,6 +208,7 @@ class Dataset:
             self.today_updated = True
             self.hash = new_hash
 
+
             if not self.data.empty:
                 self.last_updated = self.data["date loaded"].max()
             else:

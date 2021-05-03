@@ -14,6 +14,8 @@ import queue
 START_TIME = datetime.datetime.now()    # datetime.datetime(2021, 4, 1)
 START_TIME = START_TIME.replace(hour=0, minute=0, second=0, microsecond=0)
 
+LOGGER = Logger('http://covid.martinpolacek.eu/writeLog.php')
+
 
 class Updater:
     """
@@ -38,6 +40,7 @@ class Updater:
 
     def update(self):
         if connected_to_internet():
+            LOGGER.send_info("Spuštěn update.")
             self._update_datasets()
         self.app.callback_queue.put(self._update_controllers)
 
@@ -48,8 +51,8 @@ class Updater:
 
         today = datetime.datetime.today()
         today = today.replace(hour=0, minute=0, second=0, microsecond=0)
-
         if self._check_datasets_up_to_date() and START_TIME != today:
+            LOGGER.send_info("Všechny datasety staženy. Čekám na další den.")
             time_ = self.seconds_until_midnight()
 
         self.timer = threading.Timer(time_, self._keep_running)
@@ -93,13 +96,13 @@ class App(tk.Tk):
         DatasetIntegrityController,
     ]
 
-    def __init__(self, international_dataset, local_dataset, vaccination_dataset, logger_url):
+    def __init__(self, international_dataset, local_dataset, vaccination_dataset, logger):
         super().__init__()
         self.international_dataset = international_dataset
         self.vaccination_dataset = vaccination_dataset
         self.local_dataset = local_dataset
         self.vaccination_dataset = vaccination_dataset
-        self.logger = Logger(logger_url)
+        self.logger = logger
         self.load()
         self.start_time = START_TIME
         self.title(self.NAME)
@@ -219,7 +222,7 @@ class Viewer:
 
 
 def main():
-    # logger.send_info("Aplikace spuštěna na " + str(socket.gethostname()))
+    LOGGER.send_info("Aplikace spuštěna na " + str(socket.gethostname()))
 
     fetcher = WHOVaccinationFetcher()
     mzcr_fetcher = MZCRStatsFetcher()
@@ -229,7 +232,7 @@ def main():
     local_dataset = StatsDataset(mzcr_fetcher, LOCAL_STATS_DATASET, START_TIME, "MZČR stats")
     international_dataset = StatsDataset(who_fecther, INTERNATIONAL_STATS_DATASET, START_TIME, "WHO stats")
     logger_url = 'http://covid.martinpolacek.eu/writeLog.php'
-    app = App(international_dataset, local_dataset, vaccination_dataset, logger_url)
+    app = App(international_dataset, local_dataset, vaccination_dataset, LOGGER)
     app.run()
 
 
