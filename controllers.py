@@ -107,7 +107,7 @@ class DatasetIntegrityController(Controller):
             else:
                 last_updated = "No data available"
 
-            self._status[dataset.name.capitalize() + dataset_key] = last_updated
+            self._status[dataset.name + dataset_key] = last_updated
 
         self._status["Last update attempt:"] = self.format_date(dataset.last_fetched, True)
 
@@ -212,7 +212,7 @@ class VaccinationController(Controller):
         else:
             last_updated = "No data available"
 
-        self.status[dataset.name.capitalize() + dataset_key] = last_updated
+        self.status[dataset.name + dataset_key] = last_updated
         self._status["Last update attempt:"] = self.format_date(dataset.last_fetched, True)
 
     status = property(get_status, set_status)
