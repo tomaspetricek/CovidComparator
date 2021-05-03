@@ -11,7 +11,7 @@ from config import *
 import requests
 import queue
 
-START_TIME = datetime.datetime(2021, 4, 1)
+START_TIME = datetime.datetime.now()    # datetime.datetime(2021, 4, 1)
 START_TIME = START_TIME.replace(hour=0, minute=0, second=0, microsecond=0)
 
 

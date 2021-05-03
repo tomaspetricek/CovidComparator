@@ -6,8 +6,12 @@ from mixins import FlexibleMixin
 
 
 class Component(tk.Frame, FlexibleMixin):
-    def __init__(self, parent):
+    def __init__(self, parent, help_text=None):
         super().__init__(parent)
+        if help_text:
+            self.help = tk.Label(self, text=help_text)
+        else:
+            self.help = None
 
     def layout(self):
         pass
@@ -23,15 +27,21 @@ class Component(tk.Frame, FlexibleMixin):
             widget.destroy()
 
 class ListBox(Component):
-    def __init__(self, parent, items, on_select):
-        super().__init__(parent)
+    def __init__(self, parent, items, on_select, help_text=None):
+        super().__init__(parent, help_text)
         self.list_box = items
         self.on_select = on_select
         self.layout()
         self.make_flexible(n_rows=1, n_cols=1)
 
     def layout(self):
-        self._list_box.grid(row=0, column=0)
+        list_box_row = 0
+
+        if self.help:
+            self.help.grid(row=0, column=0)
+            list_box_row = 1
+
+        self._list_box.grid(row=list_box_row, column=0)
 
     def set_list_box(self, value):
         items = value
@@ -70,8 +80,8 @@ class SearchBar(Component):
     """
     Inspired: # https://www.geeksforgeeks.org/autocmplete-combobox-in-python-tkinter/
     """
-    def __init__(self, parent, items, on_select):
-        super().__init__(parent)
+    def __init__(self, parent, items, on_select, help_text=None):
+        super().__init__(parent, help_text)
         self.items = items
         self.search_box = None
         self.advisor = ListBox(self, items, on_select)
@@ -80,8 +90,14 @@ class SearchBar(Component):
         self.make_flexible(n_rows=2, n_cols=1)
 
     def layout(self):
-        self._search_box.grid(row=0, column=0)
-        self.advisor.grid(row=1, column=0)
+        free_row = 0
+
+        if self.help:
+            self.help.grid(row=0, column=0)
+            free_row = 1
+
+        self._search_box.grid(row=free_row, column=0)
+        self.advisor.grid(row=free_row + 1, column=0)
 
     def set_search_box(self, value):
         self._search_box = tk.Entry(self)
@@ -171,8 +187,8 @@ class Table(Component):
                 else:
                     text = values[row][col]
 
-                label = tk.Label(self, text=text, borderwidth=2, relief="groove")
-                label.grid(row=self._free_row + row, column=col)
+                label = tk.Label(self, text=text, borderwidth=1, relief="solid")
+                label.grid(row=self._free_row + row, column=col, sticky="nesw")
                 cell_row.append(label)
 
             cells.append(cell_row)
@@ -217,11 +233,21 @@ class Navigation(Component):
     """
     Inspiration: https://www.youtube.com/watch?v=ZS2_v_zsPTg
     """
-    def __init__(self, parent, labels, callbacks):
+    def __init__(self, parent, labels, callbacks, btn_color=None):
         super().__init__(parent)
         n_cols = len(labels)
+
+        background_color_key = 'color.TButton'
+
+        if btn_color:
+            ttk.Style().configure(background_color_key, background='black')
+
         for col, (label, callback) in enumerate(zip(labels, callbacks)):
-            button = tk.Button(self, text=label, command=callback)# width=50)
+            button = ttk.Button(self, text=label, command=callback)
+
+            if btn_color:
+                button.config(style=background_color_key)
+
             button.grid(row=0, column=col,  sticky="we", padx=5, pady=5)
 
         self.make_flexible(n_cols=n_cols, n_rows=1)

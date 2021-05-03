@@ -27,7 +27,7 @@ class Controller:
 
     def format_date(self, date, hours):
         if date is None:
-            return "Nelze se připojit k internetu"
+            return "Cannot connect to internet."
         if hours:
             return date.strftime("%d-%m-%Y %H:%M")
         return date.strftime("%d-%m-%y")
@@ -97,7 +97,15 @@ class DatasetIntegrityController(Controller):
         dataset_key = " last updated:"
 
         for dataset in datasets:
-            self._status[dataset.name.capitalize() + dataset_key] = self.format_date(dataset.last_updated, True)
+            last_updated = dataset.last_updated
+
+            if last_updated:
+                last_updated = self.format_date(dataset.last_updated, True)
+            else:
+                last_updated = "No data available"
+
+            self._status[dataset.name.capitalize() + dataset_key] = last_updated
+
         self._status["Last update attempt:"] = self.format_date(dataset.last_fetched, True)
 
     def get_status(self):
@@ -192,7 +200,17 @@ class VaccinationController(Controller):
     def set_status(self, value):
         dataset = value
         self._status = {}
-        self.status[dataset.name] = self.format_date(dataset.last_fetched, True)
+        dataset_key = " last updated:"
+
+        last_updated = dataset.last_updated
+
+        if last_updated:
+            last_updated = self.format_date(dataset.last_updated, True)
+        else:
+            last_updated = "No data available"
+
+        self.status[dataset.name.capitalize() + dataset_key] = last_updated
+        self._status["Last update attempt:"] = self.format_date(dataset.last_fetched, True)
 
     status = property(get_status, set_status)
 

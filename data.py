@@ -45,6 +45,8 @@ class WHOStatsFetcher(DataFetcher):
         content = get_csv(csv_url)
         data = pd.read_csv(io.StringIO(content))
 
+        data = data.loc[data['Country'] == "Czechia"]
+
         # keep only columns used in Dataset.COLUMN_NAMES
         data = data[["Date_reported", "Country", "New_cases", "Cumulative_cases"]]
 
@@ -204,8 +206,11 @@ class Dataset:
         if new_hash != self.hash:
             self.today_updated = True
             self.hash = new_hash
-            self.last_updated = datetime.datetime.now()
-            print(self.last_updated)
+
+            if not self.data.empty:
+                self.last_updated = self.data["date loaded"].max()
+            else:
+                self.last_updated = None
         else:
             self.today_updated = False
 

@@ -13,13 +13,14 @@ class View(tk.Frame, FlexibleMixin):
     TITLE = None
     N_COLUMNS = None
     N_ROWS = None
+    NAVIGATION_BUTTON_COLOR = "#91cde3"
 
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
         self.navigation = controller.app.view_classes
 
-        self.title = tk.Label(self, text=self.TITLE, font="Courier 15 bold")
+        self.title = tk.Label(self, text=self.TITLE, font=("Arial", 25))
 
     def layout(self):
         pass
@@ -36,7 +37,7 @@ class View(tk.Frame, FlexibleMixin):
                 callback = Callback(self.controller.show_view, context=context)
                 callbacks.append(callback)
 
-        self._navigation = Navigation(self, texts, callbacks)
+        self._navigation = Navigation(self, texts, callbacks, btn_color=self.NAVIGATION_BUTTON_COLOR)
 
     def get_navigation(self):
         return self._navigation
@@ -70,12 +71,21 @@ class VaccinationView(View):
     N_COLUMNS = 3
     N_ROWS = 4
 
+    REMOVE_HELP_TEXT = "Click on country to be removed."
+    ADD_HELP_TEXT = "Search for country in search box.\n" \
+                    "Click on country to be added.\n" \
+                    "Only {n_country} countries can be added."
+
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         self.state_bar = StateBar(self, controller.status)
         self.graph = Graph(self, controller.figure)
-        self.search_bar = SearchBar(self, controller.selectable_countries, controller.add_country)
-        self.deselect_box = ListBox(self, controller.selected_countries, controller.remove_country)
+
+        help_text = self.ADD_HELP_TEXT.format(n_country=self.controller.MAX_COUNTRIES_SELECTED)
+        self.search_bar = SearchBar(self, controller.selectable_countries, controller.add_country,
+                                    help_text=help_text)
+        self.deselect_box = ListBox(self, controller.selected_countries, controller.remove_country,
+                                    help_text=self.REMOVE_HELP_TEXT)
         self.update_button = tk.Button(self, text="Check for update", command=Callback(self.controller.update_app))
         self.layout()
 
